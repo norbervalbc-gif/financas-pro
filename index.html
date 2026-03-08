@@ -468,10 +468,28 @@ function App(){
     });
   },[transactions,selMonth,selYear]);
 
-  const summary = useMemo(()=>({
-    income:filtered.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0),
-    expense:filtered.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0),
-  }),[filtered]);
+  const summary = useMemo(()=>{
+  const income = filtered
+    .filter(t=>t.type==='income')
+    .reduce((s,t)=>s+t.amount,0);
+
+  const paidExpense = filtered
+    .filter(t=>t.type==='expense' && t.paymentDate)
+    .reduce((s,t)=>s+t.amount,0);
+
+  const openExpense = filtered
+    .filter(t=>t.type==='expense' && !t.paymentDate)
+    .reduce((s,t)=>s+t.amount,0);
+
+  const totalExpense = paidExpense + openExpense;
+
+  return {
+    income,
+    paidExpense,
+    openExpense,
+    totalExpense
+  };
+},[filtered]);
 
   const updateTx = async(newList)=>{
     setTx(newList);

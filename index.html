@@ -80,7 +80,7 @@
   import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, where } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyAlNgdmR99rYyIEWt9rZqh1YgP5bn9y-kk",
+    apiKey: "AIzaSyCaf7s0E_s9EJf28q5zi1Q7Ae-FGQ8QL3k",
     authDomain: "financas-pro-54441.firebaseapp.com",
     projectId: "financas-pro-54441",
     storageBucket: "financas-pro-54441.firebasestorage.app",
@@ -446,7 +446,8 @@ function App(){
   },[transactions]);
 
   const globalBal = useMemo(()=>{
-    const tx = transactions.filter(t=>!t.investmentType);
+    // Só conta lançamentos com data de pagamento preenchida
+    const tx = transactions.filter(t=>!t.investmentType && t.paymentDate);
     return tx.reduce((s,t)=>s+(t.type==='income'?t.amount:-t.amount),0);
   },[transactions]);
 
@@ -465,8 +466,8 @@ function App(){
   },[transactions,selMonth,selYear]);
 
   const summary = useMemo(()=>({
-    income:filtered.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0),
-    expense:filtered.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0),
+    income:filtered.filter(t=>t.type==='income'&&t.paymentDate).reduce((s,t)=>s+t.amount,0),
+    expense:filtered.filter(t=>t.type==='expense'&&t.paymentDate).reduce((s,t)=>s+t.amount,0),
   }),[filtered]);
 
   const updateTx = async(newList)=>{

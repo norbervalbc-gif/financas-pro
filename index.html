@@ -9,29 +9,23 @@
 <title>Finanças Pro</title>
 <script>
 (function(){
-  var canvas=document.createElement('canvas');
-  canvas.width=512;canvas.height=512;
-  var ctx=canvas.getContext('2d');
-  var g=ctx.createLinearGradient(0,0,512,512);
-  g.addColorStop(0,'#6366F1');g.addColorStop(1,'#8B5CF6');
-  ctx.fillStyle=g;
-  var r=110;
-  ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(512-r,0);ctx.quadraticCurveTo(512,0,512,r);
-  ctx.lineTo(512,512-r);ctx.quadraticCurveTo(512,512,512-r,512);
-  ctx.lineTo(r,512);ctx.quadraticCurveTo(0,512,0,512-r);
-  ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);
-  ctx.closePath();ctx.fill();
-  ctx.strokeStyle='#fff';ctx.lineWidth=22;ctx.lineCap='round';ctx.lineJoin='round';
+  var cv=document.createElement('canvas');cv.width=512;cv.height=512;
+  var cx=cv.getContext('2d'),g=cx.createLinearGradient(0,0,512,512);
+  g.addColorStop(0,'#6366F1');g.addColorStop(1,'#8B5CF6');cx.fillStyle=g;
+  var r=110;cx.beginPath();cx.moveTo(r,0);cx.lineTo(512-r,0);cx.quadraticCurveTo(512,0,512,r);
+  cx.lineTo(512,512-r);cx.quadraticCurveTo(512,512,512-r,512);cx.lineTo(r,512);
+  cx.quadraticCurveTo(0,512,0,512-r);cx.lineTo(0,r);cx.quadraticCurveTo(0,0,r,0);
+  cx.closePath();cx.fill();
+  cx.strokeStyle='#fff';cx.lineWidth=22;cx.lineCap='round';cx.lineJoin='round';
   var s=2.8,ox=82,oy=100;
-  ctx.beginPath();ctx.roundRect(ox+20*s,oy+60*s,140*s,110*s,12);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(ox,oy+75*s);ctx.lineTo(ox+180*s,oy+75*s);ctx.stroke();
-  ctx.beginPath();ctx.arc(ox+148*s,oy+115*s,18*s,0,Math.PI*2);
-  ctx.fillStyle='rgba(255,255,255,0.9)';ctx.fill();
-  ctx.strokeStyle='#fff';
-  ctx.beginPath();ctx.moveTo(ox+50*s,oy+75*s);
-  ctx.quadraticCurveTo(ox+50*s,oy+40*s,ox+90*s,oy+40*s);
-  ctx.quadraticCurveTo(ox+130*s,oy+40*s,ox+130*s,oy+75*s);ctx.stroke();
-  var url=canvas.toDataURL('image/png');
+  cx.beginPath();cx.roundRect(ox+20*s,oy+60*s,140*s,110*s,12);cx.stroke();
+  cx.beginPath();cx.moveTo(ox,oy+75*s);cx.lineTo(ox+180*s,oy+75*s);cx.stroke();
+  cx.beginPath();cx.arc(ox+148*s,oy+115*s,18*s,0,Math.PI*2);
+  cx.fillStyle='rgba(255,255,255,0.9)';cx.fill();cx.strokeStyle='#fff';
+  cx.beginPath();cx.moveTo(ox+50*s,oy+75*s);
+  cx.quadraticCurveTo(ox+50*s,oy+40*s,ox+90*s,oy+40*s);
+  cx.quadraticCurveTo(ox+130*s,oy+40*s,ox+130*s,oy+75*s);cx.stroke();
+  var url=cv.toDataURL('image/png');
   var a=document.createElement('link');a.rel='apple-touch-icon';a.href=url;document.head.appendChild(a);
   var b=document.createElement('link');b.rel='icon';b.type='image/png';b.href=url;document.head.appendChild(b);
 })();
@@ -55,16 +49,16 @@ const app=initializeApp({
 });
 window.__FB__={
   auth:getAuth(app),db:getFirestore(app),
-  createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,
-  onAuthStateChanged,updateProfile,doc,setDoc,onSnapshot
+  createUserWithEmailAndPassword,signInWithEmailAndPassword,
+  signOut,onAuthStateChanged,updateProfile,doc,setDoc,onSnapshot
 };
 </script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;background:#0D0F14;font-family:'DM Sans',sans-serif;overscroll-behavior:none;}
 .syne{font-family:'Syne',sans-serif;}
-.no-scrollbar::-webkit-scrollbar{display:none;}
-.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
+.noscroll::-webkit-scrollbar{display:none;}
+.noscroll{-ms-overflow-style:none;scrollbar-width:none;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -90,37 +84,35 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.5);}
 <script type="text/babel">
 const{useState,useEffect,useMemo,useCallback,useRef}=React;
 
-/* ─── helpers ─────────────────────────────────────────────────── */
+/* ─── helpers ──────────────────────────────────────────────────── */
+// Converte qualquer valor para número seguro — nunca retorna NaN
 const toNum=v=>{const n=Number(v);return isFinite(n)?n:0;};
 const fmt=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(toNum(v));
 const fmtD=s=>{if(!s)return'---';const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;};
 const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const today=()=>new Date().toISOString().slice(0,10);
 
-/* chave do mês/ano de um lançamento — usa dueDate */
-const txMonthKey=t=>{
-  const d=t.dueDate||t.date||'';
-  if(!d)return null;
-  const[y,m]=d.split('-');
-  return`${y}-${m}`;
-};
+// Normaliza paymentDate: string vazia, undefined ou null → null
+// Garante que só um valor real (ex: "2026-03-01") é considerado pago
+const normPaid=v=>(v&&v.trim&&v.trim()&&v!=='null')?v:null;
 
 const CATS=['Cartão Itaú Black','Cartão Itaú Zero','Cartão Nubank','Enel','Sabesp',
             'Aluguel','Telefone e internet','Alimentação','Lazer','Saúde','Transporte','Trabalho','Outros'];
 const MNAMES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
               'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
-/* ─── firebase ────────────────────────────────────────────────── */
+/* ─── firebase ─────────────────────────────────────────────────── */
 function waitFB(cb,n=0){
   if(window.__FB__)return cb(window.__FB__);
   if(n>100)return console.error('FB timeout');
   setTimeout(()=>waitFB(cb,n+1),100);
 }
 
-/* ─── export/import ───────────────────────────────────────────── */
+/* ─── export / import ──────────────────────────────────────────── */
 function doExport(email,txs){
   const b=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),user:{email},transactions:txs},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(b);
-  a.download=`financas-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();
+  a.download=`financas-backup-${today()}.json`;a.click();
 }
 function doImport(file,current,ok,err){
   const r=new FileReader();
@@ -135,7 +127,7 @@ function doImport(file,current,ok,err){
   r.readAsText(file);
 }
 
-/* ─── SVG icons ───────────────────────────────────────────────── */
+/* ─── ícones ───────────────────────────────────────────────────── */
 const Ic=({d,s=20,c='currentColor',sw=2,f='none'})=>(
   <svg width={s} height={s} viewBox="0 0 24 24" fill={f} stroke={c} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
     {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
@@ -143,33 +135,34 @@ const Ic=({d,s=20,c='currentColor',sw=2,f='none'})=>(
 );
 const I={
   Wallet: p=><Ic {...p} d={["M20 12V22H4V12","M22 7H2v5h20V7z","M12 22V7","M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z","M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"]}/>,
-  Up:     p=><Ic {...p} d={["M23 6l-9.5 9.5-5-5L1 18","M17 6h6v6"]}/>,
-  Down:   p=><Ic {...p} d={["M23 18l-9.5-9.5-5 5L1 6","M17 18h6v-6"]}/>,
-  Plus:   p=><Ic {...p} d={["M12 5v14","M5 12h14"]}/>,
-  Trash:  p=><Ic {...p} d={["M3 6h18","M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2","M10 11v6","M14 11v6"]}/>,
-  Edit:   p=><Ic {...p} d={["M12 20h9","M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"]}/>,
-  X:      p=><Ic {...p} d={["M18 6 6 18","M6 6l12 12"]}/>,
-  ChL:    p=><Ic {...p} d="M15 18l-6-6 6-6"/>,
-  ChR:    p=><Ic {...p} d="M9 18l6-6-6-6"/>,
-  Cloud:  p=><Ic {...p} d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>,
-  Cal:    p=><Ic {...p} d={["M8 2v4","M16 2v4","M3 10h18","M21 8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"]}/>,
-  Bank:   p=><Ic {...p} d={["M3 22h18","M6 18V11","M10 18V11","M14 18V11","M18 18V11","M12 2 2 7h20z"]}/>,
-  Home:   p=><Ic {...p} d={["M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z","M9 22V12h6v10"]}/>,
-  Card:   p=><Ic {...p} d={["M1 4h22v16H1z","M1 10h22"]}/>,
-  Zap:    p=><Ic {...p} f={p.c} d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>,
-  Drop:   p=><Ic {...p} d={["M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"]}/>,
-  Wifi:   p=><Ic {...p} d={["M5 12.55a11 11 0 0 1 14.08 0","M1.42 9a16 16 0 0 1 21.16 0","M8.53 16.11a6 6 0 0 1 6.95 0","M12 20h.01"]}/>,
-  Fork:   p=><Ic {...p} d={["M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2","M7 2v20","M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"]}/>,
-  Out:    p=><Ic {...p} d={["M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4","M16 17l5-5-5-5","M21 12H9"]}/>,
-  Mail:   p=><Ic {...p} d={["M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z","M22 6l-10 7L2 6"]}/>,
-  Lock:   p=><Ic {...p} d={["M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z","M7 11V7a5 5 0 0 1 10 0v4"]}/>,
-  Eye:    p=><Ic {...p} d={["M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z","M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"]}/>,
+  Up:    p=><Ic {...p} d={["M23 6l-9.5 9.5-5-5L1 18","M17 6h6v6"]}/>,
+  Down:  p=><Ic {...p} d={["M23 18l-9.5-9.5-5 5L1 6","M17 18h6v-6"]}/>,
+  Plus:  p=><Ic {...p} d={["M12 5v14","M5 12h14"]}/>,
+  Trash: p=><Ic {...p} d={["M3 6h18","M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2","M10 11v6","M14 11v6"]}/>,
+  Edit:  p=><Ic {...p} d={["M12 20h9","M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"]}/>,
+  X:     p=><Ic {...p} d={["M18 6 6 18","M6 6l12 12"]}/>,
+  ChL:   p=><Ic {...p} d="M15 18l-6-6 6-6"/>,
+  ChR:   p=><Ic {...p} d="M9 18l6-6-6-6"/>,
+  Cloud: p=><Ic {...p} d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>,
+  Cal:   p=><Ic {...p} d={["M8 2v4","M16 2v4","M3 10h18","M21 8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"]}/>,
+  Bank:  p=><Ic {...p} d={["M3 22h18","M6 18V11","M10 18V11","M14 18V11","M18 18V11","M12 2 2 7h20z"]}/>,
+  Home:  p=><Ic {...p} d={["M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z","M9 22V12h6v10"]}/>,
+  Card:  p=><Ic {...p} d={["M1 4h22v16H1z","M1 10h22"]}/>,
+  Zap:   p=><Ic {...p} f={p.c} d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>,
+  Drop:  p=><Ic {...p} d={["M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"]}/>,
+  Wifi:  p=><Ic {...p} d={["M5 12.55a11 11 0 0 1 14.08 0","M1.42 9a16 16 0 0 1 21.16 0","M8.53 16.11a6 6 0 0 1 6.95 0","M12 20h.01"]}/>,
+  Fork:  p=><Ic {...p} d={["M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2","M7 2v20","M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"]}/>,
+  Out:   p=><Ic {...p} d={["M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4","M16 17l5-5-5-5","M21 12H9"]}/>,
+  Mail:  p=><Ic {...p} d={["M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z","M22 6l-10 7L2 6"]}/>,
+  Lock:  p=><Ic {...p} d={["M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z","M7 11V7a5 5 0 0 1 10 0v4"]}/>,
+  Eye:   p=><Ic {...p} d={["M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z","M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"]}/>,
   EyeX:  p=><Ic {...p} d={["M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24","M1 1l22 22"]}/>,
-  User:   p=><Ic {...p} d={["M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2","M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"]}/>,
-  Shield: p=><Ic {...p} d={["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z","M9 12l2 2 4-4"]}/>,
-  Dl:     p=><Ic {...p} d={["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","M7 10l5 5 5-5","M12 15V3"]}/>,
-  Ul:     p=><Ic {...p} d={["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","M17 8l-5-5-5 5","M12 3v12"]}/>,
-  Warn:   p=><Ic {...p} d={["M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z","M12 9v4","M12 17h.01"]}/>,
+  User:  p=><Ic {...p} d={["M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2","M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"]}/>,
+  Shld:  p=><Ic {...p} d={["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z","M9 12l2 2 4-4"]}/>,
+  Dl:    p=><Ic {...p} d={["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","M7 10l5 5 5-5","M12 15V3"]}/>,
+  Ul:    p=><Ic {...p} d={["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","M17 8l-5-5-5 5","M12 3v12"]}/>,
+  Warn:  p=><Ic {...p} d={["M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z","M12 9v4","M12 17h.01"]}/>,
+  Check: p=><Ic {...p} d="M20 6 9 17l-5-5"/>,
 };
 
 /* ─── CatIcon ──────────────────────────────────────────────────── */
@@ -190,7 +183,7 @@ function CatIcon({cat,desc,type}){
 /* ─── Modal ────────────────────────────────────────────────────── */
 function Modal({children,onClose}){
   return(
-    <div className="fi" style={{position:'fixed',inset:0,background:'rgba(0,0,0,.8)',backdropFilter:'blur(12px)',zIndex:50,display:'flex',alignItems:'flex-end',justifyContent:'center'}}>
+    <div className="fi" style={{position:'fixed',inset:0,background:'rgba(0,0,0,.85)',backdropFilter:'blur(12px)',zIndex:50,display:'flex',alignItems:'flex-end',justifyContent:'center'}}>
       <div className="su" style={{background:'#12141C',width:'100%',maxWidth:500,borderRadius:'32px 32px 0 0',padding:'24px 22px 48px',maxHeight:'95vh',overflowY:'auto',border:'1px solid rgba(255,255,255,.08)',borderBottom:'none'}}>
         <div style={{display:'flex',justifyContent:'flex-end',marginBottom:4}}>
           <button onClick={onClose} style={{background:'#1A1D26',border:'none',borderRadius:12,padding:8,cursor:'pointer',display:'flex'}}><I.X s={18} c="#5A5E75"/></button>
@@ -201,10 +194,70 @@ function Modal({children,onClose}){
   );
 }
 
+/* ─── Toggle "Pago?" — resolve o problema do iOS ──────────────── */
+// Em vez de deixar um input date vazio (que o iOS preenche sozinho),
+// usamos um botão toggle. Se "pago=false" → paymentDate=null.
+// Se "pago=true" → mostra input date com valor controlado.
+function PaidToggle({paid, onChange}){
+  const isPaid = !!paid; // paid é null ou uma string de data
+  return(
+    <div>
+      <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:8,marginLeft:4}}>
+        Pagamento
+      </label>
+      {/* Botão toggle Pago / Em Aberto */}
+      <button
+        type="button"
+        onClick={()=>onChange(isPaid ? null : today())}
+        style={{
+          width:'100%',
+          padding:'13px 16px',
+          borderRadius:16,
+          border:`1.5px solid ${isPaid?'rgba(34,197,94,.4)':'rgba(245,158,11,.3)'}`,
+          background:isPaid?'rgba(34,197,94,.08)':'rgba(245,158,11,.06)',
+          color:isPaid?'#22C55E':'#F59E0B',
+          fontFamily:'DM Sans,sans-serif',
+          fontWeight:700,
+          fontSize:14,
+          cursor:'pointer',
+          display:'flex',
+          alignItems:'center',
+          justifyContent:'space-between',
+          transition:'all .2s',
+        }}
+      >
+        <span style={{display:'flex',alignItems:'center',gap:8}}>
+          {isPaid
+            ? <><I.Check s={16} c="#22C55E"/> Pago</>
+            : <><I.Warn s={16} c="#F59E0B"/> Em Aberto</>
+          }
+        </span>
+        <span style={{fontSize:11,opacity:.7}}>{isPaid?'toque para desmarcar':'toque para marcar'}</span>
+      </button>
+      {/* Campo de data — só aparece se marcado como pago */}
+      {isPaid && (
+        <div style={{marginTop:8}}>
+          <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>
+            Data do Pagamento
+          </label>
+          <input
+            className="field"
+            type="date"
+            value={paid}
+            onChange={e=>onChange(e.target.value||today())}
+            style={{fontSize:13}}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── TxCard ───────────────────────────────────────────────────── */
 function TxCard({t,onEdit,onDel,onPay}){
   const[show,setShow]=useState(false);
   const amt=toNum(t.amount);
+  const paidDate=normPaid(t.paymentDate);
   return(
     <div
       onTouchStart={()=>setShow(true)}
@@ -236,10 +289,10 @@ function TxCard({t,onEdit,onDel,onPay}){
         </div>
         <div style={{textAlign:'right'}}>
           <p style={{margin:'0 0 2px',fontSize:9,fontWeight:800,color:'#3A3E55',textTransform:'uppercase',letterSpacing:'.1em'}}>Pagamento</p>
-          <p style={{margin:0,fontSize:12,fontWeight:600,color:t.paymentDate?'#22C55E':'#F59E0B'}}>{t.paymentDate?fmtD(t.paymentDate):'Em Aberto'}</p>
+          <p style={{margin:0,fontSize:12,fontWeight:600,color:paidDate?'#22C55E':'#F59E0B'}}>{paidDate?fmtD(paidDate):'Em Aberto'}</p>
         </div>
       </div>
-      {t.type==='expense'&&!t.paymentDate&&(
+      {t.type==='expense'&&!paidDate&&(
         <button onClick={()=>onPay(t.id)} style={{width:'100%',background:'rgba(99,102,241,.08)',border:'1px solid rgba(99,102,241,.15)',borderRadius:14,padding:12,color:'#818CF8',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:10,letterSpacing:'.12em',textTransform:'uppercase',cursor:'pointer'}}>
           ✓ Marcar como Pago
         </button>
@@ -328,7 +381,7 @@ function AuthScreen({onLogin}){
             </div>
             {mode==='register'&&(
               <div style={{position:'relative'}}>
-                <div style={{position:'absolute',left:16,top:'50%',transform:'translateY(-50%)'}}><I.Shield s={16} c="#4A4E65"/></div>
+                <div style={{position:'absolute',left:16,top:'50%',transform:'translateY(-50%)'}}><I.Shld s={16} c="#4A4E65"/></div>
                 <input className="field" style={{paddingLeft:44}} type={showPw?'text':'password'} placeholder="Confirmar senha" value={conf} onChange={e=>setConf(e.target.value)} required/>
               </div>
             )}
@@ -353,11 +406,14 @@ function App(){
   const[showTx,setShowTx]=useState(false);
   const[editId,setEditId]=useState(null);
   const[showInv,setShowInv]=useState(false);
-  const[selM,setSelM]=useState(new Date().getMonth());   // 0-11, -1=todos, -2=aplic
+  const[selM,setSelM]=useState(new Date().getMonth());
   const[selY,setSelY]=useState(new Date().getFullYear());
   const[toast,setToast]=useState(null);
-  const[form,setForm]=useState({type:'expense',desc:'',amt:'',due:'',paid:'',cat:CATS[0]});
-  const[invF,setInvF]=useState({invType:'Tesouro Direto Selic',action:'Aporte',amt:'',date:new Date().toISOString().slice(0,10)});
+
+  // form: paid é null (em aberto) ou string de data "2026-03-01" (pago)
+  const[form,setForm]=useState({type:'expense',desc:'',amt:'',due:'',paid:null,cat:CATS[0]});
+  const[invF,setInvF]=useState({invType:'Tesouro Direto Selic',action:'Aporte',amt:'',date:today()});
+
   const impRef=useRef();
   const unsubRef=useRef(null);
 
@@ -376,8 +432,12 @@ function App(){
       const ref=doc(db,'users',user.uid,'data','transactions');
       unsubRef.current=onSnapshot(ref,snap=>{
         if(snap.exists()){
-          /* garante que amount é sempre número */
-          const list=(snap.data().list||[]).map(t=>({...t,amount:toNum(t.amount)}));
+          const list=(snap.data().list||[]).map(t=>({
+            ...t,
+            amount:toNum(t.amount),
+            // normaliza paymentDate: garante null se vazio
+            paymentDate:normPaid(t.paymentDate),
+          }));
           setTxs(list);
         }else setTxs([]);
       },e=>console.error('snapshot error',e));
@@ -390,81 +450,85 @@ function App(){
     if(!user)return;
     setSaving(true);
     waitFB(async({db,doc,setDoc})=>{
-      try{await setDoc(doc(db,'users',user.uid,'data','transactions'),{list,updatedAt:new Date().toISOString()});}
-      catch(e){console.error(e);}
+      try{
+        // normaliza antes de salvar: paymentDate nunca é "" no Firestore
+        const clean=list.map(t=>({...t,paymentDate:normPaid(t.paymentDate)}));
+        await setDoc(doc(db,'users',user.uid,'data','transactions'),{list:clean,updatedAt:new Date().toISOString()});
+      }catch(e){console.error(e);}
       setSaving(false);
     });
   },[user]);
 
   const upd=async list=>{setTxs(list);await save(list);};
-  const toast_=( msg,ok=true)=>{setToast({msg,ok});setTimeout(()=>setToast(null),3000);};
+  const toast_=(msg,ok=true)=>{setToast({msg,ok});setTimeout(()=>setToast(null),3000);};
   const logout=()=>waitFB(({auth,signOut})=>signOut(auth).then(()=>setUser(null)));
 
-  /* ── cálculos ──────────────────────────────────────────────── */
-
-  /* Saldo Geral Acumulado:
-     + receitas sempre (independente de paymentDate)
-     - despesas somente se tiver paymentDate
-     ignora investimentos */
+  /* ── cálculos ──────────────────────────────────────────────────
+     Regras definitivas:
+     • globalBal = Σ receitas  −  Σ despesas PAGAS  (paymentDate não-nulo)
+     • despesas em aberto NÃO afetam o saldo
+     • summary do mês = entradas pagas / saídas pagas / em aberto
+  ─────────────────────────────────────────────────────────────── */
   const globalBal=useMemo(()=>
     txs.filter(t=>!t.investmentType).reduce((s,t)=>{
-      if(t.type==='income') return s+toNum(t.amount);
-      if(t.type==='expense'&&t.paymentDate) return s-toNum(t.amount);
+      const v=toNum(t.amount);
+      const paid=normPaid(t.paymentDate);
+      if(t.type==='income') return s+v;
+      if(t.type==='expense'&&paid) return s-v;
       return s;
     },0)
   ,[txs]);
 
-  /* aplicações */
   const invs=useMemo(()=>
-    ['Tesouro Direto Selic','Crédito Privado Itaú'].map(type=>{
-      const bal=txs.filter(t=>t.investmentType===type)
-        .reduce((s,t)=>s+(t.type==='income'?toNum(t.amount):-toNum(t.amount)),0);
-      return{type,bal};
-    })
+    ['Tesouro Direto Selic','Crédito Privado Itaú'].map(type=>({
+      type,
+      bal:txs.filter(t=>t.investmentType===type)
+            .reduce((s,t)=>s+(t.type==='income'?toNum(t.amount):-toNum(t.amount)),0),
+    }))
   ,[txs]);
 
-  /* lançamentos filtrados pelo mês/ano selecionado */
+  const isInv=selM===-2;
+
   const filtered=useMemo(()=>{
     if(selM===-2)return[];
     return txs.filter(t=>{
       if(t.investmentType)return false;
-      if(selM===-1){
-        /* aba TODOS: filtra pelo ano */
-        const d=t.dueDate||t.date||'';
-        if(!d)return false;
-        return parseInt(d.slice(0,4))===selY;
-      }
-      /* aba de mês específico */
       const d=t.dueDate||t.date||'';
       if(!d)return false;
+      if(selM===-1)return parseInt(d.slice(0,4))===selY;
       const[y,m]=d.split('-');
-      return parseInt(m)-1===selM && parseInt(y)===selY;
+      return parseInt(m)-1===selM&&parseInt(y)===selY;
     });
   },[txs,selM,selY]);
 
-  /* resumo do mês selecionado — conta entradas pagas, saídas pagas e em aberto */
-  const summary=useMemo(()=>{
-    const income  =filtered.filter(t=>t.type==='income' &&  t.paymentDate).reduce((s,t)=>s+toNum(t.amount),0);
-    const expense =filtered.filter(t=>t.type==='expense'&&  t.paymentDate).reduce((s,t)=>s+toNum(t.amount),0);
-    const pending =filtered.filter(t=>t.type==='expense'&& !t.paymentDate).reduce((s,t)=>s+toNum(t.amount),0);
-    return{income,expense,pending};
-  },[filtered]);
+  const summary=useMemo(()=>({
+    income: filtered.filter(t=>t.type==='income'&&normPaid(t.paymentDate)).reduce((s,t)=>s+toNum(t.amount),0),
+    expense:filtered.filter(t=>t.type==='expense'&&normPaid(t.paymentDate)).reduce((s,t)=>s+toNum(t.amount),0),
+    pending:filtered.filter(t=>t.type==='expense'&&!normPaid(t.paymentDate)).reduce((s,t)=>s+toNum(t.amount),0),
+  }),[filtered]);
 
   /* ── ações ─────────────────────────────────────────────────── */
   const del=async id=>{await upd(txs.filter(t=>t.id!==id));toast_('Excluído.');};
 
   const pay=async id=>{
-    await upd(txs.map(t=>t.id===id?{...t,paymentDate:new Date().toISOString().slice(0,10)}:t));
+    await upd(txs.map(t=>t.id===id?{...t,paymentDate:today()}:t));
     toast_('Marcado como pago!');
   };
 
   const openAdd=()=>{
-    setForm({type:'expense',desc:'',amt:'',due:'',paid:'',cat:CATS[0]});
+    setForm({type:'expense',desc:'',amt:'',due:'',paid:null,cat:CATS[0]});
     setEditId(null);setShowTx(true);
   };
 
   const openEdit=t=>{
-    setForm({type:t.type,desc:t.description,amt:String(toNum(t.amount)),due:t.dueDate||'',paid:t.paymentDate||'',cat:t.category||CATS[0]});
+    setForm({
+      type:t.type,
+      desc:t.description,
+      amt:String(toNum(t.amount)),
+      due:t.dueDate||'',
+      paid:normPaid(t.paymentDate), // null ou string de data
+      cat:t.category||CATS[0],
+    });
     setEditId(t.id);setShowTx(true);
   };
 
@@ -478,7 +542,7 @@ function App(){
       description:form.desc.trim(),
       amount,
       dueDate:form.due,
-      paymentDate:form.paid||null,
+      paymentDate:normPaid(form.paid), // garante null se em aberto
       category:form.cat,
       year:selY,
     };
@@ -491,26 +555,9 @@ function App(){
     e.preventDefault();
     const amount=toNum(invF.amt);
     if(amount<=0){toast_('Valor inválido!',false);return;}
-    await upd([...txs,{
-      id:uid(),
-      investmentType:invF.invType,
-      type:'income',
-      description:invF.action,
-      amount,
-      date:invF.date,
-      category:'Investimento',
-    }]);
+    await upd([...txs,{id:uid(),investmentType:invF.invType,type:'income',description:invF.action,amount,date:invF.date,category:'Investimento'}]);
     setShowInv(false);toast_('Movimentação registrada!');
   };
-
-  /* campo de data reutilizável */
-  const DateField=({k,label,req})=>(
-    <div>
-      <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>{label}</label>
-      <input className="field" type="date" required={req} value={form[k]}
-        onChange={e=>setForm(f=>({...f,[k]:e.target.value}))} style={{fontSize:13}}/>
-    </div>
-  );
 
   /* ── render ────────────────────────────────────────────────── */
   if(!ready)return(
@@ -519,8 +566,6 @@ function App(){
     </div>
   );
   if(!user)return<AuthScreen onLogin={setUser}/>;
-
-  const isInv=selM===-2;
 
   return(
     <div style={{maxWidth:500,margin:'0 auto',minHeight:'100vh',background:'#0D0F14',paddingBottom:100}}>
@@ -536,12 +581,12 @@ function App(){
           </h2>
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
-          <button onClick={()=>doExport(user.email,txs.filter(t=>!t.investmentType))}
-            title="Exportar" style={{background:'rgba(34,197,94,.1)',border:'1px solid rgba(34,197,94,.2)',borderRadius:12,padding:10,cursor:'pointer',display:'flex'}}>
+          <button onClick={()=>doExport(user.email,txs.filter(t=>!t.investmentType))} title="Exportar"
+            style={{background:'rgba(34,197,94,.1)',border:'1px solid rgba(34,197,94,.2)',borderRadius:12,padding:10,cursor:'pointer',display:'flex'}}>
             <I.Dl s={16} c="#22C55E"/>
           </button>
-          <button onClick={()=>impRef.current.click()}
-            title="Importar" style={{background:'rgba(139,92,246,.1)',border:'1px solid rgba(139,92,246,.2)',borderRadius:12,padding:10,cursor:'pointer',display:'flex'}}>
+          <button onClick={()=>impRef.current.click()} title="Importar"
+            style={{background:'rgba(139,92,246,.1)',border:'1px solid rgba(139,92,246,.2)',borderRadius:12,padding:10,cursor:'pointer',display:'flex'}}>
             <I.Ul s={16} c="#8B5CF6"/>
           </button>
           <input ref={impRef} type="file" accept=".json" style={{display:'none'}} onChange={e=>{
@@ -556,7 +601,7 @@ function App(){
         </div>
       </div>
 
-      {/* ano */}
+      {/* seletor de ano */}
       <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:16,padding:'0 20px 16px'}}>
         <button onClick={()=>setSelY(y=>y-1)} style={{background:'#1A1D26',border:'1px solid rgba(255,255,255,.06)',borderRadius:10,padding:8,cursor:'pointer',display:'flex'}}><I.ChL s={16} c="#5A5E75"/></button>
         <span className="syne" style={{fontSize:18,fontWeight:800,color:'#E8EAF0',minWidth:60,textAlign:'center'}}>{selY}</span>
@@ -564,7 +609,7 @@ function App(){
       </div>
 
       {/* abas meses */}
-      <div className="no-scrollbar" style={{display:'flex',gap:6,overflowX:'auto',padding:'0 20px 20px'}}>
+      <div className="noscroll" style={{display:'flex',gap:6,overflowX:'auto',padding:'0 20px 20px'}}>
         {[[-1,'TODOS'],[-2,'APLIC.'],...MNAMES.map((m,i)=>[i,m.slice(0,3).toUpperCase()])].map(([i,lbl])=>(
           <button key={i} onClick={()=>setSelM(i)}
             style={{flexShrink:0,padding:'10px 16px',borderRadius:14,border:'none',cursor:'pointer',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:11,letterSpacing:'.08em',transition:'all .2s',
@@ -577,7 +622,7 @@ function App(){
       {/* conteúdo */}
       <div style={{padding:'0 20px'}}>
 
-        {/* ── aba aplicações ── */}
+        {/* aba aplicações */}
         {isInv?(
           <div className="fu" style={{display:'flex',flexDirection:'column',gap:16}}>
             {invs.map(inv=>(
@@ -598,7 +643,6 @@ function App(){
           </div>
 
         ):(
-          /* ── aba normal ── */
           <div className="fu" style={{display:'flex',flexDirection:'column',gap:14}}>
 
             {/* saldo geral */}
@@ -615,19 +659,19 @@ function App(){
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
               <div style={{background:'#12141C',border:'1px solid rgba(255,255,255,.06)',borderRadius:20,padding:16}}>
                 <p style={{margin:'0 0 4px',fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.1em',display:'flex',alignItems:'center',gap:4}}>
-                  <I.Up s={10} c="#22C55E"/> {selM===-1?'Entradas pagas (ano)':'Entradas pagas'}
+                  <I.Up s={10} c="#22C55E"/> {selM===-1?'Entradas (ano)':'Entradas pagas'}
                 </p>
                 <p className="syne" style={{margin:0,fontSize:17,fontWeight:800,color:'#22C55E'}}>{fmt(summary.income)}</p>
               </div>
               <div style={{background:'#12141C',border:'1px solid rgba(255,255,255,.06)',borderRadius:20,padding:16}}>
                 <p style={{margin:'0 0 4px',fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.1em',display:'flex',alignItems:'center',gap:4}}>
-                  <I.Down s={10} c="#F87171"/> {selM===-1?'Saídas pagas (ano)':'Saídas pagas'}
+                  <I.Down s={10} c="#F87171"/> {selM===-1?'Saídas (ano)':'Saídas pagas'}
                 </p>
                 <p className="syne" style={{margin:0,fontSize:17,fontWeight:800,color:'#F87171'}}>{fmt(summary.expense)}</p>
               </div>
             </div>
 
-            {/* despesas em aberto */}
+            {/* em aberto */}
             {summary.pending>0&&(
               <div style={{background:'rgba(245,158,11,.07)',border:'1px solid rgba(245,158,11,.25)',borderRadius:16,padding:'14px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                 <div style={{display:'flex',alignItems:'center',gap:8}}>
@@ -692,7 +736,7 @@ function App(){
             {editId?'Editar Lançamento':selM===-1?'Novo Lançamento':`Lançar em ${MNAMES[selM]}`}
           </p>
           <form onSubmit={submitTx} style={{display:'flex',flexDirection:'column',gap:12}}>
-            {/* tipo */}
+            {/* receita / despesa */}
             <div style={{display:'flex',gap:6,background:'#14161F',borderRadius:14,padding:5}}>
               {[['income','Receita','#22C55E'],['expense','Despesa','#F87171']].map(([v,l,c])=>(
                 <button key={v} type="button" onClick={()=>setForm(f=>({...f,type:v}))}
@@ -714,11 +758,16 @@ function App(){
                 style={{fontSize:22,fontWeight:800,color:'#818CF8'}}
                 value={form.amt} onChange={e=>setForm(f=>({...f,amt:e.target.value}))} required/>
             </div>
-            {/* datas */}
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
-              <DateField k="due" label="Vencimento" req={true}/>
-              <DateField k="paid" label="Pagamento" req={false}/>
+            {/* vencimento */}
+            <div>
+              <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>Vencimento</label>
+              <input className="field" type="date" required value={form.due} onChange={e=>setForm(f=>({...f,due:e.target.value}))} style={{fontSize:13}}/>
             </div>
+            {/* pagamento — toggle seguro para iOS */}
+            <PaidToggle
+              paid={form.paid}
+              onChange={v=>setForm(f=>({...f,paid:v}))}
+            />
             {/* categoria */}
             <div>
               <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>Categoria</label>

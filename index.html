@@ -841,7 +841,26 @@ function App(){
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+// versão do app — atualizar a cada deploy para confirmar cache limpo
+const APP_VERSION = 'v5 · 09/03/2026';
+
+// exibir versão discreta no canto inferior direito
+const VersionTag = () => (
+  <div style={{
+    position:'fixed', bottom:8, right:12,
+    fontSize:9, color:'#2A2D3A', fontFamily:'DM Sans,sans-serif',
+    pointerEvents:'none', userSelect:'none', zIndex:0,
+  }}>{APP_VERSION}</div>
+);
+
+function Root(){
+  return <>
+    <App/>
+    <VersionTag/>
+  </>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Root/>);
 </script>
 </body>
 </html>

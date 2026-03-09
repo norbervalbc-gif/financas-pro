@@ -92,9 +92,9 @@ const fmtD=s=>{if(!s)return'---';const[y,m,d]=s.split('-');return`${d}/${m}/${y}
 const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
 const today=()=>new Date().toISOString().slice(0,10);
 
-// Normaliza paymentDate: string vazia, undefined ou null → null
-// Garante que só um valor real (ex: "2026-03-01") é considerado pago
-const normPaid=v=>(v&&v.trim&&v.trim()&&v!=='null')?v:null;
+// Normaliza paymentDate: só aceita string no formato YYYY-MM-DD (10 chars)
+// Qualquer outra coisa (null, undefined, "", "null", data parcial) → null
+const normPaid=v=>(typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v.trim()))?v.trim():null;
 
 const CATS=['Cartão Itaú Black','Cartão Itaú Zero','Cartão Nubank','Enel','Sabesp',
             'Aluguel','Telefone e internet','Alimentação','Lazer','Saúde','Transporte','Trabalho','Outros'];

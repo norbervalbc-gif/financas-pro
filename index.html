@@ -194,47 +194,64 @@ function Modal({children,onClose}){
   );
 }
 
-/* ─── Toggle "Pago?" — resolve o problema do iOS ──────────────── */
-// Em vez de deixar um input date vazio (que o iOS preenche sozinho),
-// usamos um botão toggle. Se "pago=false" → paymentDate=null.
-// Se "pago=true" → mostra input date com valor controlado.
+/* ─── PaidToggle — checkbox real, seguro para PC e iOS ────────── */
+// Usa checkbox nativo: evita o bug do Tab+Space no PC (botão em foco
+// sendo ativado acidentalmente) e o bug de autofill do iOS Safari.
+// paid = null (em aberto) ou string "YYYY-MM-DD" (pago).
 function PaidToggle({paid, onChange}){
-  const isPaid = !!paid; // paid é null ou uma string de data
+  const isPaid = normPaid(paid) !== null;
+  const checkId = 'paid-check';
   return(
     <div>
       <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:8,marginLeft:4}}>
         Pagamento
       </label>
-      {/* Botão toggle Pago / Em Aberto */}
-      <button
-        type="button"
-        onClick={()=>onChange(isPaid ? null : today())}
+
+      {/* Checkbox com label clicável */}
+      <label
+        htmlFor={checkId}
         style={{
-          width:'100%',
-          padding:'13px 16px',
-          borderRadius:16,
-          border:`1.5px solid ${isPaid?'rgba(34,197,94,.4)':'rgba(245,158,11,.3)'}`,
-          background:isPaid?'rgba(34,197,94,.08)':'rgba(245,158,11,.06)',
-          color:isPaid?'#22C55E':'#F59E0B',
-          fontFamily:'DM Sans,sans-serif',
-          fontWeight:700,
-          fontSize:14,
-          cursor:'pointer',
           display:'flex',
           alignItems:'center',
           justifyContent:'space-between',
+          padding:'13px 16px',
+          borderRadius:16,
+          border:`1.5px solid ${isPaid?'rgba(34,197,94,.4)':'rgba(255,255,255,.08)'}`,
+          background:isPaid?'rgba(34,197,94,.07)':'#1A1D26',
+          cursor:'pointer',
           transition:'all .2s',
+          userSelect:'none',
         }}
       >
-        <span style={{display:'flex',alignItems:'center',gap:8}}>
-          {isPaid
-            ? <><I.Check s={16} c="#22C55E"/> Pago</>
-            : <><I.Warn s={16} c="#F59E0B"/> Em Aberto</>
-          }
+        <span style={{display:'flex',alignItems:'center',gap:10,color:isPaid?'#22C55E':'#5A5E75',fontWeight:600,fontSize:14}}>
+          {/* caixa visual do checkbox */}
+          <span style={{
+            width:20,height:20,borderRadius:6,flexShrink:0,
+            border:`2px solid ${isPaid?'#22C55E':'#3A3E55'}`,
+            background:isPaid?'#22C55E':'transparent',
+            display:'flex',alignItems:'center',justifyContent:'center',
+            transition:'all .2s',
+          }}>
+            {isPaid && <I.Check s={12} c="#fff" sw={3}/>}
+          </span>
+          {isPaid ? 'Pago' : 'Em aberto'}
         </span>
-        <span style={{fontSize:11,opacity:.7}}>{isPaid?'toque para desmarcar':'toque para marcar'}</span>
-      </button>
-      {/* Campo de data — só aparece se marcado como pago */}
+        <span style={{fontSize:11,color:'#3A3E55'}}>
+          {isPaid ? 'clique para desmarcar' : 'clique para marcar pago'}
+        </span>
+      </label>
+
+      {/* Checkbox real — invisível, controlado pelo label acima */}
+      <input
+        id={checkId}
+        type="checkbox"
+        checked={isPaid}
+        tabIndex={-1}
+        onChange={e => onChange(e.target.checked ? today() : null)}
+        style={{position:'absolute',opacity:0,width:0,height:0,pointerEvents:'none'}}
+      />
+
+      {/* Campo de data — só aparece quando marcado como pago */}
       {isPaid && (
         <div style={{marginTop:8}}>
           <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>
@@ -243,8 +260,14 @@ function PaidToggle({paid, onChange}){
           <input
             className="field"
             type="date"
-            value={paid}
-            onChange={e=>onChange(e.target.value||today())}
+            tabIndex={0}
+            autoComplete="off"
+            value={normPaid(paid)||today()}
+            onChange={e=>{
+              const v = e.target.value;
+              // só aceita data válida no formato YYYY-MM-DD
+              if(v && /^\d{4}-\d{2}-\d{2}$/.test(v)) onChange(v);
+            }}
             style={{fontSize:13}}
           />
         </div>
@@ -735,7 +758,7 @@ function App(){
           <p className="syne" style={{margin:'0 0 20px',fontSize:20,fontWeight:800,color:'#E8EAF0'}}>
             {editId?'Editar Lançamento':selM===-1?'Novo Lançamento':`Lançar em ${MNAMES[selM]}`}
           </p>
-          <form onSubmit={submitTx} style={{display:'flex',flexDirection:'column',gap:12}}>
+          <form onSubmit={submitTx} style={{display:'flex',flexDirection:'column',gap:12}} autoComplete="off">
             {/* receita / despesa */}
             <div style={{display:'flex',gap:6,background:'#14161F',borderRadius:14,padding:5}}>
               {[['income','Receita','#22C55E'],['expense','Despesa','#F87171']].map(([v,l,c])=>(
@@ -761,7 +784,7 @@ function App(){
             {/* vencimento */}
             <div>
               <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>Vencimento</label>
-              <input className="field" type="date" required value={form.due} onChange={e=>setForm(f=>({...f,due:e.target.value}))} style={{fontSize:13}}/>
+              <input className="field" type="date" required autoComplete="off" value={form.due} onChange={e=>setForm(f=>({...f,due:e.target.value}))} style={{fontSize:13}}/>
             </div>
             {/* pagamento — toggle seguro para iOS */}
             <PaidToggle

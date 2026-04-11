@@ -1,866 +1,2071 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="Finanças Pro"/>
-<title>Finanças Pro</title>
-<script>
-(function(){
-  var cv=document.createElement('canvas');cv.width=512;cv.height=512;
-  var cx=cv.getContext('2d'),g=cx.createLinearGradient(0,0,512,512);
-  g.addColorStop(0,'#6366F1');g.addColorStop(1,'#8B5CF6');cx.fillStyle=g;
-  var r=110;cx.beginPath();cx.moveTo(r,0);cx.lineTo(512-r,0);cx.quadraticCurveTo(512,0,512,r);
-  cx.lineTo(512,512-r);cx.quadraticCurveTo(512,512,512-r,512);cx.lineTo(r,512);
-  cx.quadraticCurveTo(0,512,0,512-r);cx.lineTo(0,r);cx.quadraticCurveTo(0,0,r,0);
-  cx.closePath();cx.fill();
-  cx.strokeStyle='#fff';cx.lineWidth=22;cx.lineCap='round';cx.lineJoin='round';
-  var s=2.8,ox=82,oy=100;
-  cx.beginPath();cx.roundRect(ox+20*s,oy+60*s,140*s,110*s,12);cx.stroke();
-  cx.beginPath();cx.moveTo(ox,oy+75*s);cx.lineTo(ox+180*s,oy+75*s);cx.stroke();
-  cx.beginPath();cx.arc(ox+148*s,oy+115*s,18*s,0,Math.PI*2);
-  cx.fillStyle='rgba(255,255,255,0.9)';cx.fill();cx.strokeStyle='#fff';
-  cx.beginPath();cx.moveTo(ox+50*s,oy+75*s);
-  cx.quadraticCurveTo(ox+50*s,oy+40*s,ox+90*s,oy+40*s);
-  cx.quadraticCurveTo(ox+130*s,oy+40*s,ox+130*s,oy+75*s);cx.stroke();
-  var url=cv.toDataURL('image/png');
-  var a=document.createElement('link');a.rel='apple-touch-icon';a.href=url;document.head.appendChild(a);
-  var b=document.createElement('link');b.rel='icon';b.type='image/png';b.href=url;document.head.appendChild(b);
-})();
-</script>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged,updateProfile}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-import{getFirestore,doc,setDoc,onSnapshot}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-const app=initializeApp({
-  apiKey:"AIzaSyAlNgdmR99rYyIEWt9rZqh1YgP5bn9y-kk",
-  authDomain:"financas-pro-54441.firebaseapp.com",
-  projectId:"financas-pro-54441",
-  storageBucket:"financas-pro-54441.firebasestorage.app",
-  messagingSenderId:"640682949717",
-  appId:"1:640682949717:web:f8f5a752cabff414a468dc"
-});
-window.__FB__={
-  auth:getAuth(app),db:getFirestore(app),
-  createUserWithEmailAndPassword,signInWithEmailAndPassword,
-  signOut,onAuthStateChanged,updateProfile,doc,setDoc,onSnapshot
-};
-</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YôgacomNorber – Controle de Alunos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Tiro+Devanagari+Sanskrit&display=swap" rel="stylesheet">
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;padding:0;background:#0D0F14;font-family:'DM Sans',sans-serif;overscroll-behavior:none;}
-.syne{font-family:'Syne',sans-serif;}
-.noscroll::-webkit-scrollbar{display:none;}
-.noscroll{-ms-overflow-style:none;scrollbar-width:none;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(99,102,241,.5)}70%{box-shadow:0 0 0 14px rgba(99,102,241,0)}100%{box-shadow:0 0 0 0 rgba(99,102,241,0)}}
-.fu{animation:fadeUp .5s ease both}
-.fi{animation:fadeIn .4s ease both}
-.su{animation:slideUp .35s cubic-bezier(.25,.46,.45,.94) both}
-.pl{animation:pulse 1.8s ease infinite}
-.sp{animation:spin 1s linear infinite}
-.field{width:100%;background:#1A1D26;border:1.5px solid #2A2D3A;border-radius:16px;padding:14px 18px;color:#E8EAF0;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;}
-.field:focus{border-color:#6366F1;}
-.field::placeholder{color:#4A4E65;}
-select.field{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234A4E65' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;}
-.btn{width:100%;background:linear-gradient(135deg,#6366F1,#8B5CF6);border:none;border-radius:18px;padding:17px;color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .15s;}
-.btn:active{transform:scale(.97);}
-.btn:disabled{opacity:.4;}
-input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.5);}
+:root {
+  --bg:#0f0e0c;--surface:#1a1815;--surface2:#232018;--border:#2e2a22;
+  --gold:#c9a84c;--gold-light:#e2c47a;--gold-dim:rgba(201,168,76,0.15);
+  --green:#4caf7a;--green-dim:rgba(76,175,122,0.15);
+  --red:#e05252;--red-dim:rgba(224,82,82,0.12);
+  --text:#f0ead8;--text-muted:#8a8070;--text-dim:#5a5448;
+  --personal:#7c5cbf;--online:#3a8fd4;--sabado:#d4823a;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ── TELA DE SENHA ── */
+#lockScreen{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+}
+.lock-box{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:40px 36px;
+  width:100%;max-width:340px;
+  display:flex;flex-direction:column;align-items:center;gap:20px;
+  box-shadow:0 24px 60px rgba(0,0,0,.6);
+}
+.lock-symbol{font-family:'Cormorant Garamond',serif;font-size:44px;color:var(--gold);line-height:1;}
+.lock-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--text);text-align:center;}
+.lock-sub{font-size:13px;color:var(--text-muted);text-align:center;margin-top:-10px;}
+.lock-input{
+  width:100%;padding:12px 16px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:20px;
+  letter-spacing:6px;text-align:center;outline:none;
+  transition:border-color .2s;
+}
+.lock-input:focus{border-color:var(--gold);}
+.lock-input.erro{border-color:var(--red);animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.lock-btn{
+  width:100%;padding:12px;border-radius:10px;border:none;
+  background:var(--gold);color:#1a1206;
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;transition:background .2s;
+}
+.lock-btn:hover{background:var(--gold-light);}
+.lock-erro{font-size:12px;color:var(--red);min-height:16px;}
+
+/* NAV TABS */
+.nav-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;gap:4px;position:sticky;top:0;z-index:99;}
+.nav-tab{padding:14px 18px;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* HEADER */
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 14px;border-bottom:1px solid var(--border);background:var(--surface);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-symbol{
+  font-family:'Tiro Devanagari Sanskrit',serif;
+  font-size:38px;
+  line-height:1;
+  background: linear-gradient(160deg,#f7e96a 0%,#d4a030 18%,#f0d055 35%,#8a5510 50%,#e2b840 64%,#7a4a08 78%,#f0c83a 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0px 3px 6px rgba(60,25,0,0.85)) drop-shadow(0px 1px 2px rgba(255,200,60,0.3));
+  display:inline-block;
+}
+.logo-text{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;}
+.logo-text span{color:var(--gold);}
+
+/* OM na tela de senha */
+.lock-symbol{
+  font-family:'Tiro Devanagari Sanskrit',serif;
+  font-size:86px;
+  line-height:1;
+  background: linear-gradient(160deg,#f7e96a 0%,#d4a030 18%,#f0d055 35%,#8a5510 50%,#e2b840 64%,#7a4a08 78%,#f0c83a 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0px 5px 12px rgba(40,15,0,0.9)) drop-shadow(0px 1px 3px rgba(255,210,60,0.35));
+  display:inline-block;
+}
+.header-actions{display:flex;gap:8px;}
+.btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all .2s;}
+.btn-primary{background:var(--gold);color:#1a1206;}
+.btn-primary:hover{background:var(--gold-light);}
+.btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+
+/* STATS */
+.stats-bar{display:flex;gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.stat{flex:1;padding:12px 16px;background:var(--surface);display:flex;flex-direction:column;gap:2px;min-width:100px;}
+.stat-value{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--gold);}
+.stat-label{font-size:10px;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase;}
+
+/* FILTER */
+.filter-bar{padding:12px 24px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap;}
+.filter-chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
+.filter-chip:hover,.filter-chip.active{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.search-box{margin-left:auto;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;width:190px;outline:none;}
+.search-box:focus{border-color:var(--gold);}
+.search-box::placeholder{color:var(--text-dim);}
+
+/* BOARD */
+.board{display:flex;gap:14px;padding:18px 24px;overflow-x:auto;min-height:calc(100vh - 260px);align-items:flex-start;}
+.column{min-width:290px;max-width:290px;background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow:hidden;}
+.column-header{padding:12px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.col-title{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;flex:1;}
+.col-count{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11px;color:var(--text-muted);}
+.col-personal{border-top:3px solid var(--personal);}
+.col-personal .col-title{color:var(--personal);}
+.col-tercas{border-top:3px solid var(--online);}
+.col-tercas .col-title{color:var(--online);}
+.col-sabados{border-top:3px solid var(--sabado);}
+.col-sabados .col-title{color:var(--sabado);}
+.column-cards{padding:10px;display:flex;flex-direction:column;gap:8px;}
+
+/* CARD */
+.card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.card:hover{border-color:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.4);}
+.card-banner{height:50px;background:linear-gradient(135deg,#1a1206,#2a2010,#1a1206);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.card-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(201,168,76,.08),transparent 70%);}
+.card-banner-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:.05em;
+  position:relative;
+  background: linear-gradient(160deg,#f5e070 0%,#c9913a 20%,#e8c84a 38%,#a06820 52%,#e2b840 65%,#8a5510 78%,#f0d060 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0px 2px 4px rgba(60,30,0,0.7));
+}
+.card-body{padding:10px 12px;}
+.card-status{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+.status-active{background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,122,.3);}
+.status-ending{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,82,82,.3);}
+.status-new{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,.3);}
+.card-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px;line-height:1.3;}
+.progress-wrap{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.progress-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:2px;background:var(--green);transition:width .4s;}
+.progress-fill.warning{background:var(--gold);}
+.progress-fill.danger{background:var(--red);}
+.progress-text{font-size:11px;color:var(--text-muted);white-space:nowrap;}
+.card-value{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--gold);}
+.add-card-btn{margin:0 10px 10px;padding:7px;border-radius:8px;border:1px dashed var(--border);background:transparent;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;width:calc(100% - 20px);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;}
+.add-card-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.empty-col{text-align:center;padding:24px 12px;color:var(--text-dim);font-size:12px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;visibility:hidden;transition:all .2s;}
+.modal-overlay.open{opacity:1;visibility:visible;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;transform:translateY(16px);transition:transform .2s;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-header{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;flex:1;}
+.modal-close{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-close:hover{border-color:var(--red);color:var(--red);}
+.modal-body{padding:18px 22px;display:flex;flex-direction:column;gap:14px;}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-row{display:flex;gap:10px;flex-wrap:wrap;}
+.form-row .form-group{flex:1;min-width:130px;}
+label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);}
+input,select,textarea{padding:9px 11px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;width:100%;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+select option{background:var(--surface2);}
+textarea{resize:vertical;min-height:70px;}
+
+/* CHECKLIST in modal */
+.checklist-section{border-top:1px solid var(--border);padding-top:14px;}
+.checklist-title{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.aula-list{display:flex;flex-direction:column;gap:5px;}
+.aula-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:7px;}
+.aula-item input[type="checkbox"]{width:15px;height:15px;flex-shrink:0;accent-color:var(--green);cursor:pointer;}
+.aula-item-label{flex:1;font-size:13px;}
+.aula-item-label.done{text-decoration:line-through;color:var(--text-dim);}
+.aula-date-input{padding:4px 8px;font-size:11px;width:130px;flex-shrink:0;}
+
+/* DETAIL */
+.detail-banner{height:72px;background:linear-gradient(135deg,#1a1206,#2a2010,#1a1206);display:flex;align-items:center;justify-content:center;position:relative;}
+.detail-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 40% 50%,rgba(201,168,76,.12),transparent 70%);}
+.detail-banner-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;
+  position:relative;
+  background: linear-gradient(160deg,#f5e070 0%,#c9913a 20%,#e8c84a 38%,#a06820 52%,#e2b840 65%,#8a5510 78%,#f0d060 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0px 2px 6px rgba(60,30,0,0.8));
+}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}
+.detail-row:last-child{border-bottom:none;}
+.detail-key{font-size:12px;color:var(--text-muted);}
+.detail-val{font-size:13px;color:var(--text);font-weight:500;}
+.progress-detail{margin:10px 0;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;}
+.progress-header{display:flex;justify-content:space-between;margin-bottom:7px;font-size:12px;}
+.checklist-full{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
+.check-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg);border-radius:7px;border:1px solid var(--border);}
+.check-row input[type="checkbox"]{accent-color:var(--green);width:14px;height:14px;cursor:pointer;}
+.check-row span{font-size:13px;flex:1;}
+.check-row span.done{text-decoration:line-through;color:var(--text-dim);}
+.check-date-badge{font-size:11px;color:var(--text-muted);background:var(--surface2);padding:2px 6px;border-radius:4px;white-space:nowrap;}
+.btn-delete{background:transparent;border:1px solid var(--border);color:var(--red);padding:7px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;transition:all .2s;}
+.btn-delete:hover{background:var(--red-dim);border-color:var(--red);}
+.btn-edit{background:var(--gold-dim);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:7px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;transition:all .2s;}
+.btn-edit:hover{background:rgba(201,168,76,.25);}
+.btn-renovar{background:var(--green-dim);border:1px solid rgba(76,175,122,.3);color:var(--green);padding:7px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;transition:all .2s;}
+.btn-renovar:hover{background:rgba(76,175,122,.2);}
+
+/* ABAS INTERNAS DO DETALHE */
+.dtab{padding:10px 14px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.dtab:hover{color:var(--text);}
+.dtab-active{color:var(--gold)!important;border-bottom-color:var(--gold)!important;}
+
+/* HISTÓRICO */
+.hist-block{margin-top:14px;}
+.hist-title{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+.hist-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:6px;}
+.hist-item-header{display:flex;justify-content:space-between;margin-bottom:4px;}
+.hist-pacote{font-size:13px;font-weight:500;color:var(--text);}
+.hist-valor{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--gold);}
+.hist-meta{font-size:11px;color:var(--text-muted);}
+.hist-progress{display:flex;align-items:center;gap:8px;margin-top:6px;}
+
+/* OM SVG inline */
+.om-svg-sm { width:36px; height:36px; display:inline-block; vertical-align:middle; }
+.om-svg-lg { width:80px; height:80px; display:inline-block; }
+.om-svg-md { width:28px; height:28px; display:inline-block; vertical-align:middle; }
+.btn-ordem{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:13px;padding:1px 3px;line-height:1;transition:color .15s;}
+.btn-ordem:hover{color:var(--gold);}
+.btn-mover{
+  min-width:40px;min-height:40px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text-muted);
+  font-size:18px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  flex:1;
+  max-width:60px;
+}
+.btn-mover:hover:not(:disabled){background:var(--gold-dim);color:var(--gold);border-color:var(--gold);}
+.btn-mover:active:not(:disabled){background:var(--gold);color:#1a1206;}
+.drag-over{background:var(--gold-dim)!important;border-radius:8px;transition:background .2s;}
+.btn-step{
+  min-width:40px;min-height:44px;
+  padding:0 12px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--gold);
+  font-size:22px;
+  font-weight:300;
+  cursor:pointer;
+  line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  flex-shrink:0;
+}
+.btn-step:active{background:var(--gold-dim);}
+.btn-step-left{border-right:none;border-radius:8px 0 0 8px;}
+.btn-step-right{border-left:none;border-radius:0 8px 8px 0;}
+.step-input{border-radius:0;text-align:center;-moz-appearance:textfield;-webkit-appearance:none;min-width:60px;flex:1;}
+.step-input::-webkit-inner-spin-button,.step-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+.relatorio-page{padding:20px 24px;display:none;}
+.relatorio-page.active{display:block;}
+.rel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.rel-title{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--text);}
+.rel-controls{display:flex;gap:8px;}
+.mes-select{padding:7px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.mes-select:focus{border-color:var(--gold);}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:4px;}
+.kpi-value{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--gold);}
+.kpi-label{font-size:11px;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase;}
+.kpi-sub{font-size:12px;color:var(--text-dim);margin-top:2px;}
+.rel-section-title{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
+.rel-table{width:100%;border-collapse:collapse;margin-bottom:24px;}
+.rel-table th{text-align:left;padding:8px 12px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);border-bottom:1px solid var(--border);}
+.rel-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);}
+.rel-table tr:last-child td{border-bottom:none;}
+.rel-table tr:hover td{background:var(--surface2);}
+.tipo-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;}
+.tipo-personal{background:rgba(124,92,191,.15);color:#a07de8;}
+.tipo-tercas{background:rgba(58,143,212,.15);color:#6ab3e8;}
+.tipo-sabados{background:rgba(212,130,58,.15);color:#e8a06a;}
+.bar-chart{margin-bottom:24px;}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.bar-name{font-size:12px;color:var(--text-muted);width:120px;flex-shrink:0;text-align:right;}
+.bar-wrap{flex:1;height:22px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;background:var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:600;color:#1a1206;transition:width .5s;}
+.bar-total{font-size:12px;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:15px;width:70px;}
+.no-data{text-align:center;padding:40px;color:var(--text-dim);font-size:14px;}
+.lixeira-item{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;flex-wrap:wrap;}
+.lixeira-info{flex:1;}
+.lixeira-nome{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.lixeira-meta{font-size:11px;color:var(--text-muted);}
+.lixeira-actions{display:flex;gap:8px;flex-shrink:0;}
+
+/* RENOVAR MODAL */
+.renov-info{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;color:var(--text-muted);line-height:1.6;}
+
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+@media(max-width:600px){
+  header{padding:12px 14px;}
+  .board{padding:12px 8px;gap:10px;}
+  .column{min-width:260px;max-width:260px;}
+  .stats-bar{overflow-x:auto;}
+  .stat{min-width:90px;}
+  .filter-bar{padding:10px 14px;}
+  .search-box{width:130px;}
+  .relatorio-page{padding:14px;}
+  .cards-grid{grid-template-columns:1fr 1fr;}
+}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const{useState,useEffect,useMemo,useCallback,useRef}=React;
 
-/* ─── helpers ──────────────────────────────────────────────────── */
-// Converte qualquer valor para número seguro — nunca retorna NaN
-const toNum=v=>{const n=Number(v);return isFinite(n)?n:0;};
-const fmt=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(toNum(v));
-const fmtD=s=>{if(!s)return'---';const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;};
-const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
-const today=()=>new Date().toISOString().slice(0,10);
+<!-- TELA DE SENHA -->
+<div id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-symbol">ॐ</div>
+    <div class="lock-title">YôgacomNorber</div>
+    <div class="lock-sub">Digite a senha para continuar</div>
+    <input class="lock-input" type="password" id="lockInput" maxlength="10" placeholder="••••••" onkeydown="if(event.key==='Enter')verificarSenha()">
+    <div class="lock-erro" id="lockErro"></div>
+    <button class="lock-btn" onclick="verificarSenha()">Entrar</button>
+  </div>
+</div>
 
-// Normaliza paymentDate: só aceita string no formato YYYY-MM-DD (10 chars)
-// Qualquer outra coisa (null, undefined, "", "null", data parcial) → null
-const normPaid=v=>(typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v.trim()))?v.trim():null;
+<header>
+  <div class="logo">
+    <div class="logo-symbol">ॐ</div>
+    <div class="logo-text">Yôga<span>com</span>Norber</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="exportData()">↓ Backup</button>
+    <button class="btn btn-primary" onclick="openNewModal()">+ Novo aluno</button>
+  </div>
+</header>
 
-const CATS=['Cartão Itaú Black','Cartão Itaú Zero','Cartão Nubank','Enel','Sabesp',
-            'Aluguel','Telefone e internet','Alimentação','Lazer','Saúde','Transporte','Trabalho','Outros'];
-const MNAMES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
-              'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="showTab('board',this)">📋 Alunos</button>
+  <button class="nav-tab" onclick="showTab('relatorio',this)">📊 Relatório financeiro</button>
+  <button class="nav-tab" onclick="showTab('lixeira',this)">🗑 Lixeira</button>
+</div>
 
-/* ─── firebase ─────────────────────────────────────────────────── */
-function waitFB(cb,n=0){
-  if(window.__FB__)return cb(window.__FB__);
-  if(n>100)return console.error('FB timeout');
-  setTimeout(()=>waitFB(cb,n+1),100);
-}
+<!-- BOARD TAB -->
+<div id="tab-board">
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total alunos</div></div>
+    <div class="stat"><div class="stat-value" id="statPersonal">0</div><div class="stat-label">Personal</div></div>
+    <div class="stat"><div class="stat-value" id="statTercas">0</div><div class="stat-label">Terças/quin.</div></div>
+    <div class="stat"><div class="stat-value" id="statSabados">0</div><div class="stat-label">Sábados</div></div>
+    <div class="stat"><div class="stat-value" id="statReceita">R$0</div><div class="stat-label">Receita ativa</div></div>
+  </div>
 
-/* ─── export / import ──────────────────────────────────────────── */
-function doExport(email,txs){
-  const b=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),user:{email},transactions:txs},null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);
-  a.download=`financas-backup-${today()}.json`;a.click();
-}
-function doImport(file,current,ok,err){
-  const r=new FileReader();
-  r.onload=e=>{
-    try{
-      const d=JSON.parse(e.target.result);
-      if(!Array.isArray(d.transactions))throw 0;
-      const ids=new Set(current.map(t=>t.id));
-      ok([...current,...d.transactions.filter(t=>!ids.has(t.id))]);
-    }catch{err('Arquivo inválido.');}
-  };
-  r.readAsText(file);
-}
+  <div class="filter-bar">
+    <span style="font-size:12px;color:var(--text-muted);margin-right:2px;">Filtrar:</span>
+    <button class="filter-chip active" onclick="setFilter('todos',this)">Todos</button>
+    <button class="filter-chip" onclick="setFilter('ativo',this)">Ativo</button>
+    <button class="filter-chip" onclick="setFilter('encerrando',this)">Encerrando</button>
+    <button class="filter-chip" onclick="setFilter('novo',this)">Novo</button>
+    <input class="search-box" type="text" placeholder="🔍 Buscar aluno…" id="searchBox" oninput="renderAll()">
+  </div>
 
-/* ─── ícones ───────────────────────────────────────────────────── */
-const Ic=({d,s=20,c='currentColor',sw=2,f='none'})=>(
-  <svg width={s} height={s} viewBox="0 0 24 24" fill={f} stroke={c} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
-    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
-  </svg>
-);
-const I={
-  Wallet: p=><Ic {...p} d={["M20 12V22H4V12","M22 7H2v5h20V7z","M12 22V7","M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z","M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"]}/>,
-  Up:    p=><Ic {...p} d={["M23 6l-9.5 9.5-5-5L1 18","M17 6h6v6"]}/>,
-  Down:  p=><Ic {...p} d={["M23 18l-9.5-9.5-5 5L1 6","M17 18h6v-6"]}/>,
-  Plus:  p=><Ic {...p} d={["M12 5v14","M5 12h14"]}/>,
-  Trash: p=><Ic {...p} d={["M3 6h18","M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2","M10 11v6","M14 11v6"]}/>,
-  Edit:  p=><Ic {...p} d={["M12 20h9","M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"]}/>,
-  X:     p=><Ic {...p} d={["M18 6 6 18","M6 6l12 12"]}/>,
-  ChL:   p=><Ic {...p} d="M15 18l-6-6 6-6"/>,
-  ChR:   p=><Ic {...p} d="M9 18l6-6-6-6"/>,
-  Cloud: p=><Ic {...p} d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>,
-  Cal:   p=><Ic {...p} d={["M8 2v4","M16 2v4","M3 10h18","M21 8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"]}/>,
-  Bank:  p=><Ic {...p} d={["M3 22h18","M6 18V11","M10 18V11","M14 18V11","M18 18V11","M12 2 2 7h20z"]}/>,
-  Home:  p=><Ic {...p} d={["M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z","M9 22V12h6v10"]}/>,
-  Card:  p=><Ic {...p} d={["M1 4h22v16H1z","M1 10h22"]}/>,
-  Zap:   p=><Ic {...p} f={p.c} d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>,
-  Drop:  p=><Ic {...p} d={["M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"]}/>,
-  Wifi:  p=><Ic {...p} d={["M5 12.55a11 11 0 0 1 14.08 0","M1.42 9a16 16 0 0 1 21.16 0","M8.53 16.11a6 6 0 0 1 6.95 0","M12 20h.01"]}/>,
-  Fork:  p=><Ic {...p} d={["M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2","M7 2v20","M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"]}/>,
-  Out:   p=><Ic {...p} d={["M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4","M16 17l5-5-5-5","M21 12H9"]}/>,
-  Mail:  p=><Ic {...p} d={["M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z","M22 6l-10 7L2 6"]}/>,
-  Lock:  p=><Ic {...p} d={["M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z","M7 11V7a5 5 0 0 1 10 0v4"]}/>,
-  Eye:   p=><Ic {...p} d={["M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z","M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"]}/>,
-  EyeX:  p=><Ic {...p} d={["M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24","M1 1l22 22"]}/>,
-  User:  p=><Ic {...p} d={["M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2","M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"]}/>,
-  Shld:  p=><Ic {...p} d={["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z","M9 12l2 2 4-4"]}/>,
-  Dl:    p=><Ic {...p} d={["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","M7 10l5 5 5-5","M12 15V3"]}/>,
-  Ul:    p=><Ic {...p} d={["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","M17 8l-5-5-5 5","M12 3v12"]}/>,
-  Warn:  p=><Ic {...p} d={["M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z","M12 9v4","M12 17h.01"]}/>,
-  Check: p=><Ic {...p} d="M20 6 9 17l-5-5"/>,
-};
+  <div class="board" id="board"></div>
+</div>
 
-/* ─── CatIcon ──────────────────────────────────────────────────── */
-function CatIcon({cat,desc,type}){
-  const n=(cat+' '+desc).toLowerCase();
-  let Comp=I.Card,bg='rgba(100,100,120,.15)',c='#6B7280';
-  if(type==='income')                                     {Comp=I.Up;  bg='rgba(34,197,94,.12)'; c='#22C55E';}
-  else if(n.includes('aluguel'))                          {Comp=I.Home;bg='rgba(99,102,241,.12)';c='#818CF8';}
-  else if(n.includes('enel'))                             {Comp=I.Zap; bg='rgba(245,158,11,.12)';c='#F59E0B';}
-  else if(n.includes('sabesp'))                           {Comp=I.Drop;bg='rgba(59,130,246,.12)';c='#60A5FA';}
-  else if(n.includes('telefone')||n.includes('internet')) {Comp=I.Wifi;bg='rgba(168,85,247,.12)';c='#C084FC';}
-  else if(n.includes('nubank'))                           {Comp=I.Card;bg='rgba(168,85,247,.12)';c='#A855F7';}
-  else if(n.includes('itaú')||n.includes('black')||n.includes('zero')){Comp=I.Card;bg='rgba(249,115,22,.12)';c='#FB923C';}
-  else if(n.includes('aliment')||n.includes('almoço')||n.includes('café')){Comp=I.Fork;bg='rgba(239,68,68,.12)';c='#F87171';}
-  return<div style={{width:46,height:46,borderRadius:16,background:bg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Comp s={20} c={c}/></div>;
-}
+<!-- LIXEIRA TAB -->
+<div id="tab-lixeira" class="relatorio-page">
+  <div class="rel-header">
+    <div class="rel-title">🗑 Lixeira</div>
+    <button class="btn btn-ghost" onclick="carregarLixeira()">↻ Atualizar</button>
+  </div>
+  <div id="lixeiraBody"></div>
+</div>
 
-/* ─── Modal ────────────────────────────────────────────────────── */
-function Modal({children,onClose}){
-  return(
-    <div className="fi" style={{position:'fixed',inset:0,background:'rgba(0,0,0,.85)',backdropFilter:'blur(12px)',zIndex:50,display:'flex',alignItems:'flex-end',justifyContent:'center'}}>
-      <div className="su" style={{background:'#12141C',width:'100%',maxWidth:500,borderRadius:'32px 32px 0 0',padding:'24px 22px 48px',maxHeight:'95vh',overflowY:'auto',border:'1px solid rgba(255,255,255,.08)',borderBottom:'none'}}>
-        <div style={{display:'flex',justifyContent:'flex-end',marginBottom:4}}>
-          <button onClick={onClose} style={{background:'#1A1D26',border:'none',borderRadius:12,padding:8,cursor:'pointer',display:'flex'}}><I.X s={18} c="#5A5E75"/></button>
-        </div>
-        {children}
+<!-- RELATÓRIO TAB -->
+<div id="tab-relatorio" class="relatorio-page">
+  <div class="rel-header">
+    <div class="rel-title">Relatório Financeiro</div>
+    <div class="rel-controls">
+      <select class="mes-select" id="relMes" onchange="renderRelatorio()"></select>
+      <select class="mes-select" id="relAno" onchange="renderRelatorio()"></select>
+    </div>
+  </div>
+  <div id="relatorioBody"></div>
+</div>
+
+<!-- ══════════ MODAL NOVO/EDITAR ══════════ -->
+<div class="modal-overlay" id="newModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Novo aluno</div>
+      <button class="modal-close" onclick="closeNewModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nome completo</label>
+        <input type="text" id="f_nome" placeholder="Ex: Maria Tereza Gatto">
       </div>
-    </div>
-  );
-}
-
-/* ─── PaidToggle — checkbox real, seguro para PC e iOS ────────── */
-// Usa checkbox nativo: evita o bug do Tab+Space no PC (botão em foco
-// sendo ativado acidentalmente) e o bug de autofill do iOS Safari.
-// paid = null (em aberto) ou string "YYYY-MM-DD" (pago).
-function PaidToggle({paid, onChange}){
-  const isPaid = normPaid(paid) !== null;
-  const checkId = 'paid-check';
-  return(
-    <div>
-      <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:8,marginLeft:4}}>
-        Pagamento
-      </label>
-
-      {/* Checkbox com label clicável */}
-      <label
-        htmlFor={checkId}
-        style={{
-          display:'flex',
-          alignItems:'center',
-          justifyContent:'space-between',
-          padding:'13px 16px',
-          borderRadius:16,
-          border:`1.5px solid ${isPaid?'rgba(34,197,94,.4)':'rgba(255,255,255,.08)'}`,
-          background:isPaid?'rgba(34,197,94,.07)':'#1A1D26',
-          cursor:'pointer',
-          transition:'all .2s',
-          userSelect:'none',
-        }}
-      >
-        <span style={{display:'flex',alignItems:'center',gap:10,color:isPaid?'#22C55E':'#5A5E75',fontWeight:600,fontSize:14}}>
-          {/* caixa visual do checkbox */}
-          <span style={{
-            width:20,height:20,borderRadius:6,flexShrink:0,
-            border:`2px solid ${isPaid?'#22C55E':'#3A3E55'}`,
-            background:isPaid?'#22C55E':'transparent',
-            display:'flex',alignItems:'center',justifyContent:'center',
-            transition:'all .2s',
-          }}>
-            {isPaid && <I.Check s={12} c="#fff" sw={3}/>}
-          </span>
-          {isPaid ? 'Pago' : 'Em aberto'}
-        </span>
-        <span style={{fontSize:11,color:'#3A3E55'}}>
-          {isPaid ? 'clique para desmarcar' : 'clique para marcar pago'}
-        </span>
-      </label>
-
-      {/* Checkbox real — invisível, controlado pelo label acima */}
-      <input
-        id={checkId}
-        type="checkbox"
-        checked={isPaid}
-        tabIndex={-1}
-        onChange={e => onChange(e.target.checked ? today() : null)}
-        style={{position:'absolute',opacity:0,width:0,height:0,pointerEvents:'none'}}
-      />
-
-      {/* Campo de data — só aparece quando marcado como pago */}
-      {isPaid && (
-        <div style={{marginTop:8}}>
-          <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>
-            Data do Pagamento
-          </label>
-          <input
-            className="field"
-            type="date"
-            tabIndex={0}
-            autoComplete="off"
-            value={normPaid(paid)||today()}
-            onChange={e=>{
-              const v = e.target.value;
-              // só aceita data válida no formato YYYY-MM-DD
-              if(v && /^\d{4}-\d{2}-\d{2}$/.test(v)) onChange(v);
-            }}
-            style={{fontSize:13}}
-          />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo de aula</label>
+          <select id="f_tipo" onchange="onTipoChange(this)">
+          </select>
         </div>
-      )}
-    </div>
-  );
-}
-
-/* ─── TxCard ───────────────────────────────────────────────────── */
-function TxCard({t,onEdit,onDel,onPay}){
-  const[show,setShow]=useState(false);
-  const amt=toNum(t.amount);
-  const paidDate=normPaid(t.paymentDate);
-  return(
-    <div
-      onTouchStart={()=>setShow(true)}
-      onTouchEnd={()=>setTimeout(()=>setShow(false),2000)}
-      onMouseEnter={()=>setShow(true)}
-      onMouseLeave={()=>setShow(false)}
-      style={{background:'#12141C',border:`1px solid ${show?'rgba(99,102,241,.3)':'rgba(255,255,255,.06)'}`,borderRadius:24,padding:18,display:'flex',flexDirection:'column',gap:14,transition:'border-color .2s'}}
-    >
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <div style={{display:'flex',alignItems:'center',gap:12,flex:1,minWidth:0}}>
-          <CatIcon cat={t.category||''} desc={t.description||''} type={t.type}/>
-          <div style={{minWidth:0}}>
-            <p style={{margin:0,fontSize:14,fontWeight:600,color:'#E8EAF0',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{t.description}</p>
-            <span style={{fontSize:10,fontWeight:800,color:'#818CF8',background:'rgba(99,102,241,.1)',padding:'2px 8px',borderRadius:6,textTransform:'uppercase',letterSpacing:'.06em'}}>{t.category}</span>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="f_status">
+            <option value="ativo">Pacote ativo</option>
+            <option value="encerrando">Encerrando</option>
+            <option value="novo">Novo</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Qtd. aulas no pacote</label>
+          <div style="display:flex;align-items:stretch;">
+            <button type="button" class="btn-step btn-step-left" onclick="stepField('f_qtdAulas',-1,1,200)">−</button>
+            <input type="number" id="f_qtdAulas" min="1" max="200" value="8" onchange="gerarAulas()" class="step-input">
+            <button type="button" class="btn-step btn-step-right" onclick="stepField('f_qtdAulas',1,1,200)">+</button>
           </div>
         </div>
-        <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:8,flexShrink:0,marginLeft:10}}>
-          <p className="syne" style={{margin:0,fontSize:14,fontWeight:800,color:t.type==='income'?'#22C55E':'#E8EAF0'}}>{t.type==='income'?'+ ':'- '}{fmt(amt)}</p>
-          <div style={{display:'flex',gap:6,opacity:show?1:0,transition:'opacity .2s'}}>
-            <button onClick={()=>onEdit(t)} style={{background:'rgba(99,102,241,.1)',border:'none',borderRadius:8,padding:6,cursor:'pointer',display:'flex'}}><I.Edit s={12} c="#818CF8"/></button>
-            <button onClick={()=>onDel(t.id)} style={{background:'rgba(239,68,68,.1)',border:'none',borderRadius:8,padding:6,cursor:'pointer',display:'flex'}}><I.Trash s={12} c="#F87171"/></button>
+        <div class="form-group">
+          <label>Valor pago (R$)</label>
+          <div style="display:flex;align-items:stretch;">
+            <button type="button" class="btn-step btn-step-left" onclick="stepField('f_valor',-10,0,99999)">−</button>
+            <input type="number" id="f_valor" min="0" step="10" placeholder="350" class="step-input">
+            <button type="button" class="btn-step btn-step-right" onclick="stepField('f_valor',10,0,99999)">+</button>
           </div>
         </div>
       </div>
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,paddingTop:12,borderTop:'1px solid rgba(255,255,255,.04)'}}>
-        <div>
-          <p style={{margin:'0 0 2px',fontSize:9,fontWeight:800,color:'#3A3E55',textTransform:'uppercase',letterSpacing:'.1em'}}>Vencimento</p>
-          <p style={{margin:0,fontSize:12,fontWeight:600,color:'#8A8FA8'}}>{fmtD(t.dueDate||t.date)}</p>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Data do pagamento</label>
+          <input type="date" id="f_dataPag">
         </div>
-        <div style={{textAlign:'right'}}>
-          <p style={{margin:'0 0 2px',fontSize:9,fontWeight:800,color:'#3A3E55',textTransform:'uppercase',letterSpacing:'.1em'}}>Pagamento</p>
-          <p style={{margin:0,fontSize:12,fontWeight:600,color:paidDate?'#22C55E':'#F59E0B'}}>{paidDate?fmtD(paidDate):'Em Aberto'}</p>
+        <div class="form-group">
+          <label>Número do pacote</label>
+          <div style="display:flex;align-items:stretch;">
+            <button type="button" class="btn-step btn-step-left" onclick="stepField('f_numPacote',-1,1,999)">−</button>
+            <input type="number" id="f_numPacote" min="1" value="1" class="step-input">
+            <button type="button" class="btn-step btn-step-right" onclick="stepField('f_numPacote',1,1,999)">+</button>
+          </div>
         </div>
       </div>
-      {t.type==='expense'&&!paidDate&&(
-        <button onClick={()=>onPay(t.id)} style={{width:'100%',background:'rgba(99,102,241,.08)',border:'1px solid rgba(99,102,241,.15)',borderRadius:14,padding:12,color:'#818CF8',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:10,letterSpacing:'.12em',textTransform:'uppercase',cursor:'pointer'}}>
-          ✓ Marcar como Pago
-        </button>
-      )}
+      <div class="form-group">
+        <label>Observações</label>
+        <textarea id="f_obs" placeholder="Iniciou em… alergias, preferências…"></textarea>
+      </div>
+      <div class="checklist-section">
+        <div class="checklist-title">
+          <span>✅ Aulas do pacote</span>
+          <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;" onclick="gerarAulas()">Regenerar</button>
+        </div>
+        <div class="aula-list" id="aulaList"></div>
+      </div>
     </div>
-  );
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeNewModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarAluno()">Salvar aluno</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL DETALHE ══════════ -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="detail-banner">
+      <div class="detail-banner-text">ॐ YôgacomNorber</div>
+    </div>
+    <div class="modal-header">
+      <div class="modal-title" id="detail_nome">–</div>
+      <button class="modal-close" onclick="closeDetail()">×</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-footer">
+      <button class="btn-delete" onclick="deletarAluno()">🗑 Excluir</button>
+      <button class="btn-renovar" onclick="abrirRenovar()">🔄 Renovar</button>
+      <button class="btn-edit" onclick="editarAluno()">✏️ Editar</button>
+      <div style="display:flex;gap:4px;margin-left:auto;">
+        <button class="btn-ghost btn" style="padding:6px 9px;font-size:14px;" onclick="moverAluno(viewingId,-999)" title="Mover para o início">⇈</button>
+        <button class="btn-ghost btn" style="padding:6px 9px;font-size:14px;" onclick="moverAluno(viewingId,-1)"   title="Mover para cima">↑</button>
+        <button class="btn-ghost btn" style="padding:6px 9px;font-size:14px;" onclick="moverAluno(viewingId,1)"    title="Mover para baixo">↓</button>
+        <button class="btn-ghost btn" style="padding:6px 9px;font-size:14px;" onclick="moverAluno(viewingId,999)"  title="Mover para o final">⇊</button>
+      </div>
+      <button class="btn btn-primary" onclick="closeDetail()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL EDITAR HISTÓRICO ══════════ -->
+<div class="modal-overlay" id="editHistModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="editHistTitle">Editar pacote do histórico</div>
+      <button class="modal-close" onclick="fecharEditHist()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Qtd. aulas</label>
+          <div style="display:flex;align-items:stretch;">
+            <button type="button" class="btn-step btn-step-left" onclick="stepField('eh_qtd',-1,1,200)">−</button>
+            <input type="number" id="eh_qtd" min="1" max="200" class="step-input" onchange="gerarAulasHist()">
+            <button type="button" class="btn-step btn-step-right" onclick="stepField('eh_qtd',1,1,200)">+</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Valor pago (R$)</label>
+          <div style="display:flex;align-items:stretch;">
+            <button type="button" class="btn-step btn-step-left" onclick="stepField('eh_valor',-10,0,99999)">−</button>
+            <input type="number" id="eh_valor" min="0" step="10" class="step-input">
+            <button type="button" class="btn-step btn-step-right" onclick="stepField('eh_valor',10,0,99999)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Data do pagamento</label>
+          <input type="date" id="eh_dataPag">
+        </div>
+        <div class="form-group">
+          <label>Nº do pacote</label>
+          <input type="number" id="eh_numPacote" min="1" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);">
+        </div>
+      </div>
+      <div class="checklist-section">
+        <div class="checklist-title">
+          <span>✅ Aulas do pacote</span>
+          <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;" onclick="gerarAulasHist()">Regenerar</button>
+        </div>
+        <div class="aula-list" id="aulaListHist"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharEditHist()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarEditHist()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL CONFIRMAÇÃO ══════════ -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-body" style="padding:24px;">
+      <div style="font-size:15px;line-height:1.5;color:var(--text);" id="confirmMsg"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharConfirm()">Cancelar</button>
+      <button class="btn-delete" id="confirmOkBtn" style="padding:8px 16px;">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL RENOVAR ══════════ -->
+<div class="modal-overlay" id="renovarModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <div class="modal-title">🔄 Renovar pacote</div>
+      <button class="modal-close" onclick="closeRenovar()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="renov-info" id="renovInfo"></div>
+      <div class="form-row" style="margin-top:4px;">
+        <div class="form-group">
+          <label>Qtd. aulas novo pacote</label>
+          <div style="display:flex;align-items:stretch;">
+            <button type="button" class="btn-step btn-step-left" onclick="stepField('rv_qtd',-1,1,200)">−</button>
+            <input type="number" id="rv_qtd" min="1" max="200" value="8" class="step-input">
+            <button type="button" class="btn-step btn-step-right" onclick="stepField('rv_qtd',1,1,200)">+</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Novo valor (R$)</label>
+          <div style="display:flex;align-items:stretch;">
+            <button type="button" class="btn-step btn-step-left" onclick="stepField('rv_valor',-10,0,99999)">−</button>
+            <input type="number" id="rv_valor" min="0" step="10" class="step-input">
+            <button type="button" class="btn-step btn-step-right" onclick="stepField('rv_valor',10,0,99999)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Data do pagamento</label>
+        <input type="date" id="rv_data">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeRenovar()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarRenovar()">Confirmar renovação</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────── CONFIRMAÇÃO ───────────────
+let _confirmCallback = null;
+function confirmar(msg, callback){
+  document.getElementById('confirmMsg').textContent = msg;
+  _confirmCallback = callback;
+  document.getElementById('confirmModal').classList.add('open');
+  document.getElementById('confirmOkBtn').onclick = ()=>{ fecharConfirm(); callback(); };
+}
+function fecharConfirm(){
+  document.getElementById('confirmModal').classList.remove('open');
+  _confirmCallback = null;
+  // resetar botão ao padrão
+  const btn = document.getElementById('confirmOkBtn');
+  btn.textContent = 'Excluir';
+  btn.style.background = '';
+  btn.style.color = '';
+  btn.style.border = '';
 }
 
-/* ─── AuthScreen ───────────────────────────────────────────────── */
-function AuthScreen({onLogin}){
-  const[mode,setMode]=useState('login');
-  const[email,setEmail]=useState('');
-  const[name,setName]=useState('');
-  const[pass,setPass]=useState('');
-  const[conf,setConf]=useState('');
-  const[showPw,setShowPw]=useState(false);
-  const[err,setErr]=useState('');
-  const[load,setLoad]=useState(false);
+// ─────────────── SÍMBOLO OM SVG ───────────────
+// Traçado fiel à foto: corpo "3" à esquerda, grande curva "O" à direita,
+// cauda longa embaixo, ponto acima e semicírculo curvado no topo
+function omSVG(size){
+  const s = size || 'sm';
+  const cls = `om-svg-${s}`;
+  return `<svg class="${cls}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="omGold${s}" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%"   stop-color="#f7e96a"/>
+      <stop offset="15%"  stop-color="#d4a030"/>
+      <stop offset="32%"  stop-color="#f0d055"/>
+      <stop offset="50%"  stop-color="#8a5510"/>
+      <stop offset="65%"  stop-color="#e2b840"/>
+      <stop offset="80%"  stop-color="#7a4a08"/>
+      <stop offset="100%" stop-color="#f0c83a"/>
+    </linearGradient>
+    <filter id="omShadow${s}">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="rgba(40,18,0,0.85)"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="rgba(255,200,80,0.25)"/>
+    </filter>
+  </defs>
+  <g fill="url(#omGold${s})" filter="url(#omShadow${s})">
+    <!-- Corpo principal: número "3" estilizado à esquerda -->
+    <path d="
+      M 38 18
+      C 50 14, 64 18, 66 28
+      C 68 36, 60 42, 52 43
+      C 60 44, 70 50, 68 60
+      C 66 72, 50 78, 36 72
+      C 30 69, 26 64, 28 58
+      C 29 54, 33 52, 37 54
+      C 34 57, 35 63, 42 65
+      C 52 68, 60 62, 58 55
+      C 56 48, 46 46, 40 47
+      C 36 47, 34 44, 36 41
+      C 38 38, 46 38, 50 36
+      C 56 33, 58 27, 52 23
+      C 46 19, 38 22, 36 27
+      C 34 31, 36 34, 39 34
+      C 36 34, 32 31, 33 27
+      C 34 22, 36 18, 38 18 Z
+    "/>
+    <!-- Cauda longa embaixo à esquerda -->
+    <path d="
+      M 30 70
+      C 22 76, 14 88, 22 96
+      C 26 100, 32 98, 34 94
+      C 36 90, 32 86, 28 88
+      C 30 84, 36 82, 34 76
+      C 33 73, 31 71, 30 70 Z
+    "/>
+    <!-- Grande "O" à direita — corpo redondo -->
+    <path d="
+      M 72 30
+      C 88 30, 96 42, 94 56
+      C 92 70, 80 80, 66 78
+      C 52 76, 44 64, 46 52
+      C 48 40, 58 30, 72 30 Z
+      M 72 38
+      C 62 38, 55 46, 55 55
+      C 55 64, 62 72, 72 72
+      C 82 72, 89 64, 88 55
+      C 87 46, 82 38, 72 38 Z
+    " fill-rule="evenodd"/>
+    <!-- Ponto acima à direita -->
+    <circle cx="80" cy="14" r="5"/>
+    <!-- Semicírculo / arco curvado no topo -->
+    <path d="
+      M 42 10
+      C 48 2, 68 2, 74 10
+      C 70 8, 50 7, 46 12
+      C 45 11, 43 10, 42 10 Z
+    "/>
+    <!-- Pequena curva que liga o arco ao corpo -->
+    <path d="
+      M 74 10
+      C 78 14, 80 18, 80 20
+      C 79 18, 77 14, 74 10 Z
+    " stroke="url(#omGold${s})" stroke-width="2" fill="url(#omGold${s})"/>
+  </g>
+</svg>`;
+}
 
-  const submit=e=>{
-    e.preventDefault();setErr('');setLoad(true);
-    waitFB(({auth,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile})=>{
-      if(mode==='register'){
-        if(pass.length<6){setErr('Senha: mínimo 6 caracteres.');setLoad(false);return;}
-        if(pass!==conf){setErr('Senhas não conferem.');setLoad(false);return;}
-        createUserWithEmailAndPassword(auth,email.trim(),pass)
-          .then(cr=>updateProfile(cr.user,{displayName:name}).then(()=>onLogin(cr.user)))
-          .catch(e=>{
-            if(e.code==='auth/email-already-in-use')setErr('E-mail já cadastrado.');
-            else if(e.code==='auth/invalid-email')setErr('E-mail inválido.');
-            else setErr('Erro ao criar conta.');
-            setLoad(false);
-          });
-      }else{
-        signInWithEmailAndPassword(auth,email.trim(),pass)
-          .then(cr=>onLogin(cr.user))
-          .catch(e=>{
-            if(['auth/user-not-found','auth/wrong-password','auth/invalid-credential'].includes(e.code))
-              setErr('E-mail ou senha incorretos.');
-            else setErr('Erro ao entrar.');
-            setLoad(false);
-          });
+function stepField(id, step, min, max){
+  const el = document.getElementById(id);
+  let val = parseFloat(el.value) || 0;
+  val = Math.min(max, Math.max(min, val + step));
+  el.value = val;
+  // disparar onchange se existir (para gerarAulas no campo de qtd)
+  el.dispatchEvent(new Event('change'));
+}
+
+// ─────────────── SENHA ───────────────
+function verificarSenha(){
+  const input=document.getElementById('lockInput');
+  const erro=document.getElementById('lockErro');
+  if(input.value==='314869'){
+    document.getElementById('lockScreen').style.display='none';
+    input.value='';
+  } else {
+    erro.textContent='Senha incorreta. Tente novamente.';
+    input.classList.add('erro');
+    input.value='';
+    setTimeout(()=>{input.classList.remove('erro');erro.textContent='';},1000);
+  }
+}
+window.addEventListener('load',()=>{
+  document.getElementById('tab-relatorio').style.display='none';
+  document.getElementById('tab-lixeira').style.display='none';
+  document.getElementById('lockInput').focus();
+  initFirebase();
+  initRelatorioControls();
+  carregarDados();
+});
+
+// ─────────────── QUADROS ───────────────
+const QUADROS_PADRAO = [
+  {id:'personal', nome:'Personal',          icone:'👤'},
+  {id:'tercas',   nome:'Terças & Quintas',   icone:'📅'},
+  {id:'sabados',  nome:'Sábados',            icone:'🗓️'},
+];
+
+let quadros = [...QUADROS_PADRAO];
+
+function saveQuadros(){ saveQuadrosDB(); }
+
+function atualizarSelectTipo(valorAtual){
+  const sel = document.getElementById('f_tipo');
+  sel.innerHTML = '';
+  quadros.forEach(q=>{
+    const opt = document.createElement('option');
+    opt.value = q.id;
+    opt.textContent = q.nome;
+    sel.appendChild(opt);
+  });
+  const sep = document.createElement('option');
+  sep.disabled = true;
+  sep.textContent = '──────────';
+  sel.appendChild(sep);
+  const novo = document.createElement('option');
+  novo.value = '__novo__';
+  novo.textContent = '＋ Criar novo quadro…';
+  sel.appendChild(novo);
+  if(valorAtual) sel.value = valorAtual;
+}
+
+function onTipoChange(sel){
+  if(sel.value === '__novo__'){
+    sel.value = quadros[0].id; // volta ao primeiro enquanto abre o modal
+    abrirNovoQuadro();
+  }
+}
+
+// Modal de novo quadro — inline simples
+function abrirNovoQuadro(){
+  const nome = prompt('Nome do novo quadro:\n(Ex: Segundas e Quartas)');
+  if(!nome || !nome.trim()) return;
+  const icones = ['📅','🗓️','🌅','🌙','⭐','🔵','🟢','🟠','🟣'];
+  const icone = icones[quadros.length % icones.length];
+  const cor = PALETA[(quadros.length - 3) % PALETA.length];
+  const id = 'q_' + nome.trim().toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'') + '_' + Date.now().toString(36);
+  quadros.push({id, nome:nome.trim(), icone, cor});
+  saveQuadros();
+  renderBoard();
+  renderAll();
+  atualizarSelectTipo(id);
+  // abre o modal de novo aluno já nesse quadro
+  openNewModal(id);
+}
+
+// ─────────────── DRAG AND DROP ───────────────
+function ativarDragColunas(){
+  // drag entre colunas (desktop)
+  document.querySelectorAll('.column-cards').forEach(col=>{
+    col.addEventListener('dragover', e=>{
+      e.preventDefault();
+      col.classList.add('drag-over');
+    });
+    col.addEventListener('dragleave', ()=>col.classList.remove('drag-over'));
+    col.addEventListener('drop', e=>{
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      const alunoId  = e.dataTransfer.getData('alunoId');
+      const tipoOrig = e.dataTransfer.getData('alunoTipo');
+      const novoTipo = col.id.replace('cards-','');
+      if(novoTipo !== tipoOrig){
+        moverAlunoParaQuadro(alunoId, novoTipo);
+      } else {
+        // reordenar dentro da mesma coluna
+        const cardAlvo = e.target?.closest('.card');
+        if(cardAlvo){
+          const idAlvo = cardAlvo.getAttribute('data-id');
+          if(idAlvo && idAlvo !== alunoId) trocarOrdemAlunos(alunoId, idAlvo);
+        }
       }
     });
-  };
+  });
 
-  return(
-    <div style={{minHeight:'100vh',background:'#0D0F14',display:'flex',alignItems:'center',justifyContent:'center',padding:20}}>
-      <div className="fu" style={{width:'100%',maxWidth:380}}>
-        <div style={{textAlign:'center',marginBottom:40}}>
-          <div className="pl" style={{width:72,height:72,background:'linear-gradient(135deg,#6366F1,#8B5CF6)',borderRadius:24,margin:'0 auto 20px',display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <I.Wallet s={34} c="#fff"/>
-          </div>
-          <h1 className="syne" style={{margin:'0 0 8px',fontSize:32,fontWeight:800,background:'linear-gradient(135deg,#818CF8,#C084FC)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>
-            Finanças <span style={{color:'#fff',WebkitTextFillColor:'#fff'}}>Pro</span>
-          </h1>
-          <p style={{margin:0,color:'#4A4E65',fontSize:14}}>{mode==='login'?'Bem-vindo de volta':'Crie sua conta gratuita'}</p>
-        </div>
-        <div style={{background:'#12141C',borderRadius:28,padding:28,border:'1px solid rgba(255,255,255,.06)'}}>
-          <div style={{display:'flex',background:'#0D0F14',borderRadius:16,padding:4,marginBottom:24}}>
-            {[['login','Entrar'],['register','Cadastrar']].map(([v,l])=>(
-              <button key={v} onClick={()=>{setMode(v);setErr('');}}
-                style={{flex:1,padding:12,borderRadius:12,border:'none',cursor:'pointer',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:13,transition:'all .2s',
-                  ...(mode===v?{background:'linear-gradient(135deg,#6366F1,#8B5CF6)',color:'#fff'}:{background:'transparent',color:'#3A3E55'})}}>
-                {l}
-              </button>
-            ))}
-          </div>
-          <form onSubmit={submit} style={{display:'flex',flexDirection:'column',gap:12}}>
-            {mode==='register'&&(
-              <div style={{position:'relative'}}>
-                <div style={{position:'absolute',left:16,top:'50%',transform:'translateY(-50%)'}}><I.User s={16} c="#4A4E65"/></div>
-                <input className="field" style={{paddingLeft:44}} type="text" placeholder="Seu nome" value={name} onChange={e=>setName(e.target.value)} required/>
-              </div>
-            )}
-            <div style={{position:'relative'}}>
-              <div style={{position:'absolute',left:16,top:'50%',transform:'translateY(-50%)'}}><I.Mail s={16} c="#4A4E65"/></div>
-              <input className="field" style={{paddingLeft:44}} type="email" placeholder="E-mail" value={email} onChange={e=>setEmail(e.target.value)} required/>
-            </div>
-            <div style={{position:'relative'}}>
-              <div style={{position:'absolute',left:16,top:'50%',transform:'translateY(-50%)'}}><I.Lock s={16} c="#4A4E65"/></div>
-              <input className="field" style={{paddingLeft:44,paddingRight:48}} type={showPw?'text':'password'} placeholder="Senha" value={pass} onChange={e=>setPass(e.target.value)} required/>
-              <button type="button" onClick={()=>setShowPw(!showPw)} style={{position:'absolute',right:14,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',display:'flex'}}>
-                {showPw?<I.EyeX s={16} c="#4A4E65"/>:<I.Eye s={16} c="#4A4E65"/>}
-              </button>
-            </div>
-            {mode==='register'&&(
-              <div style={{position:'relative'}}>
-                <div style={{position:'absolute',left:16,top:'50%',transform:'translateY(-50%)'}}><I.Shld s={16} c="#4A4E65"/></div>
-                <input className="field" style={{paddingLeft:44}} type={showPw?'text':'password'} placeholder="Confirmar senha" value={conf} onChange={e=>setConf(e.target.value)} required/>
-              </div>
-            )}
-            {err&&<div style={{background:'rgba(239,68,68,.12)',border:'1px solid rgba(239,68,68,.3)',borderRadius:12,padding:'12px 16px',color:'#F87171',fontSize:13,fontWeight:500}}>{err}</div>}
-            <button className="btn" type="submit" disabled={load} style={{marginTop:8,display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
-              {load?<div className="sp" style={{width:18,height:18,border:'2px solid rgba(255,255,255,.3)',borderTopColor:'#fff',borderRadius:'50%'}}/>:(mode==='login'?'Entrar na conta':'Criar conta')}
-            </button>
-          </form>
-        </div>
-        <p style={{textAlign:'center',color:'#2A2D3A',fontSize:12,marginTop:24}}>☁️ Dados sincronizados na nuvem</p>
-      </div>
-    </div>
+  // drag quadros (desktop) — arrastar pelo cabeçalho
+  document.querySelectorAll('.column').forEach((col, qi)=>{
+    const header = col.querySelector('.column-header');
+    if(!header) return;
+    col.setAttribute('draggable','true');
+    col.setAttribute('data-qidx', qi);
+    col.addEventListener('dragstart', e=>{
+      if(e.target.tagName==='BUTTON') { e.preventDefault(); return; }
+      e.dataTransfer.setData('quadroIdx', qi);
+      col.style.opacity='0.5';
+    });
+    col.addEventListener('dragend', ()=>col.style.opacity='1');
+  });
+
+  document.getElementById('board').addEventListener('dragover', e=>{
+    e.preventDefault();
+    const colAlvo = e.target?.closest('.column');
+    document.querySelectorAll('.column').forEach(c=>c.style.outline='');
+    if(colAlvo) colAlvo.style.outline = `2px solid var(--gold)`;
+  });
+  document.getElementById('board').addEventListener('dragleave', ()=>{
+    document.querySelectorAll('.column').forEach(c=>c.style.outline='');
+  });
+  document.getElementById('board').addEventListener('drop', e=>{
+    e.preventDefault();
+    document.querySelectorAll('.column').forEach(c=>c.style.outline='');
+    const qIdx = e.dataTransfer.getData('quadroIdx');
+    if(!qIdx && qIdx!=='0') return;
+    const colAlvo = e.target?.closest('.column');
+    if(!colAlvo) return;
+    const qIdxAlvo = parseInt(colAlvo.getAttribute('data-qidx'));
+    const qIdxOrig = parseInt(qIdx);
+    if(qIdxAlvo !== qIdxOrig && !isNaN(qIdxAlvo)){
+      [quadros[qIdxOrig], quadros[qIdxAlvo]] = [quadros[qIdxAlvo], quadros[qIdxOrig]];
+      saveQuadros();
+      renderBoard();
+      renderAll();
+      ativarDragColunas();
+    }
+  });
+}
+
+async function moverAlunoParaQuadro(alunoId, novoTipo){
+  const a = alunos.find(x=>x.id===alunoId);
+  if(!a || a.tipo===novoTipo) return;
+  a.tipo = novoTipo;
+  await save(a);
+  renderAll();
+}
+
+async function trocarOrdemAlunos(idA, idB){
+  const a = alunos.find(x=>x.id===idA);
+  const b = alunos.find(x=>x.id===idB);
+  if(!a||!b||a.tipo!==b.tipo) return;
+  const doQuadro = alunos.filter(x=>x.tipo===a.tipo).sort((x,y)=>(x.ordem??999)-(y.ordem??999));
+  const iA = doQuadro.findIndex(x=>x.id===idA);
+  const iB = doQuadro.findIndex(x=>x.id===idB);
+  [doQuadro[iA].ordem, doQuadro[iB].ordem] = [iB, iA];
+  await save(doQuadro[iA]);
+  await save(doQuadro[iB]);
+  renderAll();
+  ativarDragColunas();
+}
+
+// ─────────────── REORDENAÇÃO ───────────────
+function moverQuadro(id, dir){
+  const i = quadros.findIndex(q=>q.id===id);
+  const j = i + dir;
+  if(j<0 || j>=quadros.length) return;
+  [quadros[i], quadros[j]] = [quadros[j], quadros[i]];
+  saveQuadros();
+  renderBoard();
+  renderAll();
+}
+
+function moverAluno(id, dir){
+  // dir: -1=cima, 1=baixo, -999=início, 999=final
+  const a = alunos.find(x=>x.id===id);
+  const tipo = a.tipo;
+  // pegar só alunos do mesmo quadro na ordem atual
+  const doQuadro = alunos.filter(x=>x.tipo===tipo);
+  const i = doQuadro.findIndex(x=>x.id===id);
+  let j;
+  if(dir === -999) j = 0;
+  else if(dir === 999) j = doQuadro.length - 1;
+  else j = i + dir;
+  if(j<0 || j>=doQuadro.length || j===i) return;
+
+  // reordenar dentro do array global
+  const idxGlobalI = alunos.indexOf(doQuadro[i]);
+  const idxGlobalJ = alunos.indexOf(doQuadro[j]);
+  [alunos[idxGlobalI], alunos[idxGlobalJ]] = [alunos[idxGlobalJ], alunos[idxGlobalI]];
+
+  // salvar ordem no Firebase — gravar campo 'ordem' em cada aluno do quadro
+  const atualizados = alunos.filter(x=>x.tipo===tipo);
+  atualizados.forEach((al, oi)=>{ al.ordem = oi; save(al); });
+
+  renderAll();
+}
+
+function excluirQuadro(id){
+  const q = quadros.find(x=>x.id===id);
+  const nAlunos = alunos.filter(a=>a.tipo===id).length;
+  const aviso = nAlunos > 0 ? ` (há ${nAlunos} aluno(s) neste quadro que ficará sem quadro)` : '';
+  confirmar(
+    `Mover o quadro "${q.nome}" para a lixeira?${aviso}`,
+    async ()=>{
+      await db.collection('lixeira').doc('quadro_'+id).set({
+        ...q,
+        _tipo: 'quadro',
+        _deletadoEm: new Date().toISOString()
+      });
+      quadros = quadros.filter(x=>x.id!==id);
+      saveQuadros();
+      renderBoard();
+      renderAll();
+    }
   );
 }
 
-/* ─── App ──────────────────────────────────────────────────────── */
-function App(){
-  const[user,setUser]=useState(null);
-  const[ready,setReady]=useState(false);
-  const[txs,setTxs]=useState([]);
-  const[saving,setSaving]=useState(false);
-  const[showTx,setShowTx]=useState(false);
-  const[editId,setEditId]=useState(null);
-  const[showInv,setShowInv]=useState(false);
-  const[selM,setSelM]=useState(new Date().getMonth());
-  const[selY,setSelY]=useState(new Date().getFullYear());
-  const[toast,setToast]=useState(null);
-
-  // form: paid é null (em aberto) ou string de data "2026-03-01" (pago)
-  const[form,setForm]=useState({type:'expense',desc:'',amt:'',due:'',paid:null,cat:CATS[0]});
-  const[invF,setInvF]=useState({invType:'Tesouro Direto Selic',action:'Aporte',amt:'',date:today()});
-
-  const impRef=useRef();
-  const unsubRef=useRef(null);
-
-  /* auth */
-  useEffect(()=>{
-    waitFB(({auth,onAuthStateChanged})=>{
-      onAuthStateChanged(auth,u=>{setUser(u);setReady(true);});
-    });
-  },[]);
-
-  /* firestore realtime */
-  useEffect(()=>{
-    if(unsubRef.current){unsubRef.current();unsubRef.current=null;}
-    if(!user){setTxs([]);return;}
-    waitFB(({db,doc,onSnapshot})=>{
-      const ref=doc(db,'users',user.uid,'data','transactions');
-      unsubRef.current=onSnapshot(ref,snap=>{
-        if(snap.exists()){
-          const list=(snap.data().list||[]).map(t=>({
-            ...t,
-            amount:toNum(t.amount),
-            // normaliza paymentDate: garante null se vazio
-            paymentDate:normPaid(t.paymentDate),
-          }));
-          setTxs(list);
-        }else setTxs([]);
-      },e=>console.error('snapshot error',e));
-    });
-    return()=>{if(unsubRef.current)unsubRef.current();};
-  },[user]);
-
-  /* save */
-  const save=useCallback(async list=>{
-    if(!user)return;
-    setSaving(true);
-    waitFB(async({db,doc,setDoc})=>{
-      try{
-        // normaliza antes de salvar: paymentDate nunca é "" no Firestore
-        const clean=list.map(t=>({...t,paymentDate:normPaid(t.paymentDate)}));
-        await setDoc(doc(db,'users',user.uid,'data','transactions'),{list:clean,updatedAt:new Date().toISOString()});
-      }catch(e){console.error(e);}
-      setSaving(false);
-    });
-  },[user]);
-
-  const upd=async list=>{setTxs(list);await save(list);};
-  const toast_=(msg,ok=true)=>{setToast({msg,ok});setTimeout(()=>setToast(null),3000);};
-  const logout=()=>waitFB(({auth,signOut})=>signOut(auth).then(()=>setUser(null)));
-
-  /* ── cálculos ──────────────────────────────────────────────────
-     Regras definitivas:
-     • globalBal = Σ receitas  −  Σ despesas PAGAS  (paymentDate não-nulo)
-     • despesas em aberto NÃO afetam o saldo
-     • summary do mês = entradas pagas / saídas pagas / em aberto
-  ─────────────────────────────────────────────────────────────── */
-  const globalBal=useMemo(()=>
-    txs.filter(t=>!t.investmentType).reduce((s,t)=>{
-      const v=toNum(t.amount);
-      const paid=normPaid(t.paymentDate);
-      if(t.type==='income') return s+v;
-      if(t.type==='expense'&&paid) return s-v;
-      return s;
-    },0)
-  ,[txs]);
-
-  const invs=useMemo(()=>
-    ['Tesouro Direto Selic','Crédito Privado Itaú'].map(type=>({
-      type,
-      bal:txs.filter(t=>t.investmentType===type)
-            .reduce((s,t)=>s+(t.type==='income'?toNum(t.amount):-toNum(t.amount)),0),
-    }))
-  ,[txs]);
-
-  const isInv=selM===-2;
-
-  const filtered=useMemo(()=>{
-    if(selM===-2)return[];
-    return txs.filter(t=>{
-      if(t.investmentType)return false;
-      const d=t.dueDate||t.date||'';
-      if(!d)return false;
-      if(selM===-1)return parseInt(d.slice(0,4))===selY;
-      const[y,m]=d.split('-');
-      return parseInt(m)-1===selM&&parseInt(y)===selY;
-    });
-  },[txs,selM,selY]);
-
-  const summary=useMemo(()=>({
-    income: filtered.filter(t=>t.type==='income'&&normPaid(t.paymentDate)).reduce((s,t)=>s+toNum(t.amount),0),
-    expense:filtered.filter(t=>t.type==='expense'&&normPaid(t.paymentDate)).reduce((s,t)=>s+toNum(t.amount),0),
-    pending:filtered.filter(t=>t.type==='expense'&&!normPaid(t.paymentDate)).reduce((s,t)=>s+toNum(t.amount),0),
-  }),[filtered]);
-
-  /* ── ações ─────────────────────────────────────────────────── */
-  const del=async id=>{await upd(txs.filter(t=>t.id!==id));toast_('Excluído.');};
-
-  const pay=async id=>{
-    await upd(txs.map(t=>t.id===id?{...t,paymentDate:today()}:t));
-    toast_('Marcado como pago!');
+// ─────────────── FIREBASE ───────────────
+let db;
+function initFirebase(){
+  const firebaseConfig = {
+    apiKey: "AIzaSyCvsAHEbovgLkNLpDeymU6sfu1YFlmXjMc",
+    authDomain: "yogacomnorber-online.firebaseapp.com",
+    projectId: "yogacomnorber-online",
+    storageBucket: "yogacomnorber-online.firebasestorage.app",
+    messagingSenderId: "263374068699",
+    appId: "1:263374068699:web:8c0f07ee12d69dcbd7e5fe"
   };
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+}
 
-  const openAdd=()=>{
-    setForm({type:'expense',desc:'',amt:'',due:'',paid:null,cat:CATS[0]});
-    setEditId(null);setShowTx(true);
-  };
+// ─────────────── DATA ───────────────
+let alunos = [];
+let editingId = null, viewingId = null, renovandoId = null;
+let activeFilter = 'todos';
 
-  const openEdit=t=>{
-    setForm({
-      type:t.type,
-      desc:t.description,
-      amt:String(toNum(t.amount)),
-      due:t.dueDate||'',
-      paid:normPaid(t.paymentDate), // null ou string de data
-      cat:t.category||CATS[0],
-    });
-    setEditId(t.id);setShowTx(true);
-  };
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
-  const submitTx=async e=>{
+// Salva um aluno no Firestore
+async function save(aluno){
+  if(!aluno) return;
+  await db.collection('alunos').doc(aluno.id).set(aluno);
+}
+
+// Salva os quadros no Firestore
+async function saveQuadrosDB(){
+  await db.collection('config').doc('quadros').set({ lista: quadros });
+}
+
+// Carrega todos os dados do Firestore
+async function carregarDados(){
+  mostrarCarregando(true);
+  try {
+    // Carregar quadros
+    const qDoc = await db.collection('config').doc('quadros').get();
+    if(qDoc.exists && qDoc.data().lista){
+      quadros = qDoc.data().lista;
+    }
+
+    // Carregar alunos
+    const snap = await db.collection('alunos').get();
+    alunos = snap.docs.map(d => d.data());
+  } catch(e){
+    console.error('Erro ao carregar Firebase:', e);
+    alert('Erro ao conectar com o banco de dados. Verifique sua conexão.');
+  }
+  mostrarCarregando(false);
+  renderBoard();
+  renderAll();
+}
+
+function mostrarCarregando(sim){
+  let el = document.getElementById('loadingOverlay');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'loadingOverlay';
+    el.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(15,14,12,0.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;';
+    el.innerHTML = `<div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:70px;line-height:1;background:linear-gradient(160deg,#f7e96a 0%,#d4a030 18%,#f0d055 35%,#8a5510 50%,#e2b840 64%,#7a4a08 78%,#f0c83a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0px 4px 10px rgba(40,15,0,0.9));display:inline-block;">ॐ</div>
+      <div style="font-size:14px;color:#8a8070;margin-top:8px;">Carregando dados da nuvem…</div>`;
+    document.body.appendChild(el);
+  }
+  el.style.display = sim ? 'flex' : 'none';
+}
+
+function getDadosExemplo(){
+  return [
+    { id: uid(), nome:'Maria Tereza Gatto', tipo:'tercas', status:'ativo', qtdAulas:8, valor:350, dataPag:'2026-03-12', numPacote:5,
+      obs:'Iniciou as práticas on-line com o Prof. Norber em 31-03-2025.',
+      historico:[
+        {numPacote:1,qtdAulas:8,valor:280,dataPag:'2025-03-31',aulasConcluidas:8,aulas:Array.from({length:8},(_,i)=>({label:`Aula ${i+1}`,done:true,date:''}))},
+        {numPacote:2,qtdAulas:8,valor:300,dataPag:'2025-06-10',aulasConcluidas:8,aulas:Array.from({length:8},(_,i)=>({label:`Aula ${i+1}`,done:true,date:''}))},
+        {numPacote:3,qtdAulas:8,valor:320,dataPag:'2025-09-01',aulasConcluidas:8,aulas:Array.from({length:8},(_,i)=>({label:`Aula ${i+1}`,done:true,date:''}))},
+        {numPacote:4,qtdAulas:8,valor:350,dataPag:'2025-12-05',aulasConcluidas:8,aulas:Array.from({length:8},(_,i)=>({label:`Aula ${i+1}`,done:true,date:''}))},
+      ],
+      aulas:[
+        {label:'Aula 1',done:true,date:'2026-03-17'},{label:'Aula 2',done:true,date:'2026-03-19'},
+        {label:'Aula 3',done:true,date:'2026-03-24'},{label:'Aula 4',done:true,date:'2026-03-26'},
+        {label:'Aula 5',done:true,date:'2026-03-31'},{label:'Aula 6',done:false,date:''},
+        {label:'Aula 7',done:false,date:''},{label:'Aula 8',done:false,date:''},
+      ]},
+    { id:uid(), nome:'Lorena Pessoa', tipo:'personal', status:'ativo', qtdAulas:40, valor:120, dataPag:'2026-01-01', numPacote:1,
+      obs:'Hora/Aula.', historico:[],
+      aulas:Array.from({length:40},(_,i)=>({label:`Aula ${i+1}`,done:true,date:''}))},
+    { id:uid(), nome:'Marcos Sanchez', tipo:'personal', status:'ativo', qtdAulas:4, valor:200, dataPag:'2026-03-01', numPacote:1,
+      obs:'', historico:[],
+      aulas:Array.from({length:4},(_,i)=>({label:`Aula ${i+1}`,done:false,date:''}))},
+    { id:uid(), nome:'Paula F. Brandão', tipo:'sabados', status:'encerrando', qtdAulas:4, valor:150, dataPag:'2026-02-15', numPacote:4,
+      obs:'', historico:[
+        {numPacote:1,qtdAulas:4,valor:130,dataPag:'2025-06-01',aulasConcluidas:4,aulas:[]},
+        {numPacote:2,qtdAulas:4,valor:140,dataPag:'2025-09-01',aulasConcluidas:4,aulas:[]},
+        {numPacote:3,qtdAulas:4,valor:150,dataPag:'2025-12-01',aulasConcluidas:4,aulas:[]},
+      ],
+      aulas:Array.from({length:20},(_,i)=>({label:`Aula ${i+1}`,done:i<19,date:''}))},
+    { id:uid(), nome:'Gabriela Hendges Oliveira', tipo:'sabados', status:'ativo', qtdAulas:4, valor:150, dataPag:'2026-03-20', numPacote:1,
+      obs:'', historico:[],
+      aulas:Array.from({length:4},(_,i)=>({label:`Aula ${i+1}`,done:false,date:''}))},
+    { id:uid(), nome:'Sheila', tipo:'tercas', status:'ativo', qtdAulas:4, valor:200, dataPag:'2026-03-15', numPacote:1,
+      obs:'', historico:[],
+      aulas:Array.from({length:4},(_,i)=>({label:`Aula ${i+1}`,done:false,date:''}))},
+  ];
+}
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+
+// ─────────────── TABS ───────────────
+function showTab(tab, el){
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-board').style.display = tab==='board'?'block':'none';
+  document.getElementById('tab-relatorio').style.display = tab==='relatorio'?'block':'none';
+  document.getElementById('tab-lixeira').style.display = tab==='lixeira'?'block':'none';
+  if(tab==='relatorio') renderRelatorio();
+  if(tab==='lixeira') carregarLixeira();
+}
+
+// ─────────────── RENDER BOARD ───────────────
+// Cores fixas para os quadros fixos, paleta para os novos
+const CORES_FIXAS = {personal:'#7c5cbf', tercas:'#3a8fd4', sabados:'#d4823a'};
+const PALETA = ['#4caf7a','#e05252','#c9a84c','#5bbfbf','#bf5b9a','#7c9abf','#bf7c5b'];
+
+function corDoQuadro(tipo){
+  if(CORES_FIXAS[tipo]) return CORES_FIXAS[tipo];
+  const q = quadros.find(q=>q.id===tipo);
+  return q ? q.cor : '#8a8070';
+}
+
+function renderBoard(){
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+
+  quadros.forEach((q, qi)=>{
+    const cor = corDoQuadro(q.id);
+    const col = document.createElement('div');
+    col.className = 'column';
+    col.style.borderTop = `3px solid ${cor}`;
+    col.id = 'col-'+q.id;
+
+    const isFixo = ['personal','tercas','sabados'].includes(q.id);
+    const deleteBtnHtml = isFixo ? '' :
+      `<button class="btn-ordem" onclick="excluirQuadro('${q.id}')" title="Excluir quadro"
+        onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-dim)'">✕</button>`;
+
+    const podeSubir  = qi > 0;
+    const podeDescer = qi < quadros.length - 1;
+
+    col.innerHTML = `
+      <div class="column-header">
+        <span style="font-size:15px;">${q.icone||'📅'}</span>
+        <span class="col-title" style="color:${cor};flex:1;">${q.nome}</span>
+        <span class="col-count" id="count-${q.id}">0</span>
+        <button class="btn-ordem" onclick="moverQuadro('${q.id}',-1)" title="Mover para esquerda" ${podeSubir?'':'disabled style="opacity:0.2;"'} style="font-size:16px;padding:4px 8px;min-width:32px;min-height:32px;">◀</button>
+        <button class="btn-ordem" onclick="moverQuadro('${q.id}',1)"  title="Mover para direita" ${podeDescer?'':'disabled style="opacity:0.2;"'} style="font-size:16px;padding:4px 8px;min-width:32px;min-height:32px;">▶</button>
+        ${deleteBtnHtml}
+      </div>
+      <div class="column-cards" id="cards-${q.id}"></div>
+      <button class="add-card-btn" onclick="openNewModal('${q.id}')">＋ Adicionar</button>`;
+    board.appendChild(col);
+  });
+
+  // botão "＋ Novo quadro" no final
+  const addCol = document.createElement('div');
+  addCol.style.cssText = 'min-width:220px;display:flex;align-items:flex-start;padding-top:4px;';
+  addCol.innerHTML = `
+    <button onclick="abrirNovoQuadro()"
+      style="width:100%;padding:12px 16px;border-radius:12px;border:2px dashed var(--border);
+             background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;
+             font-size:13px;cursor:pointer;transition:all .2s;text-align:left;"
+      onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+      ＋ Novo quadro
+    </button>`;
+  board.appendChild(addCol);
+}
+
+function renderAll(){
+  const search = document.getElementById('searchBox').value.toLowerCase();
+
+  // agrupar alunos por quadro
+  const cols = {};
+  quadros.forEach(q=>cols[q.id]=[]);
+
+  alunos.forEach(a=>{
+    if(search && !a.nome.toLowerCase().includes(search)) return;
+    if(activeFilter!=='todos' && a.status!==activeFilter) return;
+    if(cols[a.tipo]!==undefined) cols[a.tipo].push(a);
+  });
+
+  // respeitar ordem definida pelo usuário
+  Object.keys(cols).forEach(k=>{
+    cols[k].sort((a,b)=>(a.ordem??999)-(b.ordem??999));
+  });
+
+  quadros.forEach(q=>{
+    const el = document.getElementById('cards-'+q.id);
+    if(!el) return;
+    el.innerHTML='';
+    if(!cols[q.id].length) el.innerHTML='<div class="empty-col">Nenhum aluno aqui</div>';
+    else cols[q.id].forEach(a=>el.appendChild(buildCard(a)));
+    const cnt = document.getElementById('count-'+q.id);
+    if(cnt) cnt.textContent = cols[q.id].length;
+  });
+
+  // stats
+  document.getElementById('statTotal').textContent=alunos.length;
+  document.getElementById('statPersonal').textContent=alunos.filter(a=>a.tipo==='personal').length;
+  document.getElementById('statTercas').textContent=alunos.filter(a=>a.tipo==='tercas').length;
+  document.getElementById('statSabados').textContent=alunos.filter(a=>a.tipo==='sabados').length;
+  const rec=alunos.filter(a=>a.status==='ativo').reduce((s,a)=>s+(a.valor||0),0);
+  document.getElementById('statReceita').textContent='R$'+rec.toLocaleString('pt-BR');
+  // ativar drag and drop após renderizar
+  setTimeout(ativarDragColunas, 50);
+}
+
+function buildCard(a){
+  const done=a.aulas.filter(x=>x.done).length, total=a.aulas.length;
+  const pct=total?Math.round(done/total*100):0;
+  const fillClass=pct>=90?'danger':pct>=70?'warning':'';
+  const statusMap={ativo:'status-active',encerrando:'status-ending',novo:'status-new'};
+  const statusLabel={ativo:'● Pacote ativo',encerrando:'⚠ Encerrando',novo:'★ Novo'};
+
+  const doQuadro = alunos.filter(x=>x.tipo===a.tipo).sort((x,y)=>(x.ordem??999)-(y.ordem??999));
+  const pos = doQuadro.findIndex(x=>x.id===a.id);
+  const podeSubir  = pos > 0;
+  const podeDescer = pos < doQuadro.length - 1;
+
+  const div=document.createElement('div');
+  div.className='card';
+  div.setAttribute('draggable','true');
+  div.setAttribute('data-id', a.id);
+  div.setAttribute('data-tipo', a.tipo);
+
+  // ── Drag events (desktop)
+  div.addEventListener('dragstart', e=>{
+    e.dataTransfer.setData('alunoId', a.id);
+    e.dataTransfer.setData('alunoTipo', a.tipo);
+    div.style.opacity='0.4';
+  });
+  div.addEventListener('dragend', ()=>{ div.style.opacity='1'; });
+
+  // ── Touch events (iPhone)
+  let touchTimer = null;
+  let isDragging = false;
+  let ghost = null;
+
+  div.addEventListener('touchstart', e=>{
+    isDragging = false;
+    touchTimer = setTimeout(()=>{
+      isDragging = true;
+      ghost = div.cloneNode(true);
+      ghost.style.cssText = `position:fixed;z-index:9000;opacity:0.8;width:${div.offsetWidth}px;pointer-events:none;`;
+      document.body.appendChild(ghost);
+      div.style.opacity = '0.4';
+    }, 500);
+  }, {passive:true});
+
+  div.addEventListener('touchmove', e=>{
+    if(!isDragging) return;
     e.preventDefault();
-    const amount=toNum(form.amt);
-    if(amount<=0){toast_('Valor inválido!',false);return;}
-    const t={
-      id:editId||uid(),
-      type:form.type,
-      description:form.desc.trim(),
-      amount,
-      dueDate:form.due,
-      paymentDate:normPaid(form.paid), // garante null se em aberto
-      category:form.cat,
-      year:selY,
+    const t = e.touches[0];
+    if(ghost){
+      ghost.style.left = (t.clientX - div.offsetWidth/2)+'px';
+      ghost.style.top  = (t.clientY - 30)+'px';
+    }
+    // destacar coluna alvo
+    document.querySelectorAll('.column-cards').forEach(c=>c.classList.remove('drag-over'));
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    const col = el?.closest('.column-cards');
+    if(col) col.classList.add('drag-over');
+  }, {passive:false});
+
+  div.addEventListener('touchend', e=>{
+    clearTimeout(touchTimer);
+    if(!isDragging){ isDragging=false; return; }
+    isDragging = false;
+    if(ghost){ ghost.remove(); ghost=null; }
+    div.style.opacity = '1';
+    document.querySelectorAll('.column-cards').forEach(c=>c.classList.remove('drag-over'));
+    const t = e.changedTouches[0];
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    const colCards = el?.closest('.column-cards');
+    if(colCards){
+      const novoTipo = colCards.id.replace('cards-','');
+      if(novoTipo !== a.tipo){
+        moverAlunoParaQuadro(a.id, novoTipo);
+      } else {
+        // reordenar dentro da mesma coluna
+        const cardAlvo = el?.closest('.card');
+        if(cardAlvo && cardAlvo !== div){
+          const idAlvo = cardAlvo.getAttribute('data-id');
+          trocarOrdemAlunos(a.id, idAlvo);
+        }
+      }
+    }
+  });
+
+  div.innerHTML=`
+    <div class="card-banner" style="cursor:pointer;" onclick="openDetail('${a.id}')">
+      <div class="card-banner-text">ॐ YôgacomNorber</div>
+    </div>
+    <div class="card-body" style="cursor:pointer;" onclick="openDetail('${a.id}')">
+      <div class="card-status ${statusMap[a.status]}">${statusLabel[a.status]}</div>
+      <div class="card-name">${a.nome} – Pacote ${a.numPacote} (${a.qtdAulas} aulas)</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill ${fillClass}" style="width:${pct}%"></div></div>
+        <span class="progress-text">${done}/${total}</span>
+      </div>
+      <div class="card-value">R$: ${(a.valor||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:10px;padding:8px 12px 10px;border-top:1px solid var(--border);">
+      <button class="btn-mover" onclick="moverAluno('${a.id}',-999)" title="Início" ${podeSubir?'':'disabled'} style="${podeSubir?'':'opacity:0.2;cursor:default;'}">⇈</button>
+      <button class="btn-mover" onclick="moverAluno('${a.id}',-1)"   title="Cima"   ${podeSubir?'':'disabled'} style="${podeSubir?'':'opacity:0.2;cursor:default;'}">↑</button>
+      <button class="btn-mover" onclick="moverAluno('${a.id}',1)"    title="Baixo"  ${podeDescer?'':'disabled'} style="${podeDescer?'':'opacity:0.2;cursor:default;'}">↓</button>
+      <button class="btn-mover" onclick="moverAluno('${a.id}',999)"  title="Final"  ${podeDescer?'':'disabled'} style="${podeDescer?'':'opacity:0.2;cursor:default;'}">⇊</button>
+    </div>`;
+  return div;
+}
+
+function setFilter(f,el){
+  activeFilter=f;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderAll();
+}
+
+// ─────────────── MODAL NOVO/EDITAR ───────────────
+function openNewModal(tipo){
+  editingId=null;
+  document.getElementById('modalTitle').textContent='Novo aluno';
+  document.getElementById('f_nome').value='';
+  atualizarSelectTipo(tipo || quadros[0].id);
+  document.getElementById('f_status').value='ativo';
+  document.getElementById('f_qtdAulas').value=8;
+  document.getElementById('f_valor').value='';
+  document.getElementById('f_dataPag').value=new Date().toISOString().split('T')[0];
+  document.getElementById('f_numPacote').value=1;
+  document.getElementById('f_obs').value='';
+  document.getElementById('aulaList').innerHTML=''; // limpa DOM antigo
+  gerarAulas();
+  document.getElementById('newModal').classList.add('open');
+}
+function closeNewModal(){document.getElementById('newModal').classList.remove('open');}
+
+function gerarAulas(){
+  const qtd = parseInt(document.getElementById('f_qtdAulas').value) || 8;
+  const list = document.getElementById('aulaList');
+
+  // Capturar estado atual do DOM (preserva edições do usuário no modal)
+  const estadoAtual = [];
+  const itemsAtual = list.querySelectorAll('.aula-item');
+  itemsAtual.forEach((item, i) => {
+    estadoAtual[i] = {
+      done: item.querySelector('input[type="checkbox"]').checked,
+      date: item.querySelector('input[type="date"]').value,
+      nota: item.querySelector('input[type="text"]')?.value || ''
     };
-    await upd(editId?txs.map(x=>x.id===editId?t:x):[...txs,t]);
-    setShowTx(false);setEditId(null);
-    toast_(editId?'Atualizado!':'Adicionado!');
-  };
+  });
 
-  const submitInv=async e=>{
-    e.preventDefault();
-    const amount=toNum(invF.amt);
-    if(amount<=0){toast_('Valor inválido!',false);return;}
-    await upd([...txs,{id:uid(),investmentType:invF.invType,type:'income',description:invF.action,amount,date:invF.date,category:'Investimento'}]);
-    setShowInv(false);toast_('Movimentação registrada!');
-  };
+  // Dados salvos no Firebase para este aluno
+  const existing = editingId ? (alunos.find(a=>a.id===editingId)?.aulas || []) : [];
 
-  /* ── render ────────────────────────────────────────────────── */
-  if(!ready)return(
-    <div style={{minHeight:'100vh',background:'#0D0F14',display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <div className="sp" style={{width:40,height:40,border:'3px solid rgba(99,102,241,.2)',borderTopColor:'#6366F1',borderRadius:'50%'}}/>
-    </div>
-  );
-  if(!user)return<AuthScreen onLogin={setUser}/>;
+  list.innerHTML = '';
+  for(let i = 0; i < qtd; i++){
+    // Se o DOM já tinha esse item, preserva. Senão usa Firebase. Senão vazio.
+    const ex = estadoAtual[i] !== undefined ? estadoAtual[i] : (existing[i] || {done:false, date:'', nota:''});
+    const div = document.createElement('div');
+    div.className = 'aula-item';
+    div.style.flexDirection = 'column';
+    div.style.alignItems = 'stretch';
+    div.style.gap = '6px';
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="ck_${i}" ${ex.done?'checked':''} onchange="this.parentElement.parentElement.querySelector('.aula-item-label').className='aula-item-label'+(this.checked?' done':'')">
+        <span class="aula-item-label${ex.done?' done':''}">Aula ${i+1}</span>
+        <input type="date" class="aula-date-input" id="dt_${i}" value="${ex.date||''}">
+        <button type="button" onclick="document.getElementById('dt_${i}').value=''" title="Limpar data"
+          style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:14px;padding:2px 4px;flex-shrink:0;line-height:1;"
+          onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-dim)'">✕</button>
+      </div>
+      <input type="text" id="nt_${i}" placeholder="Observação da aula (ex: falta pagar)" value="${ex.nota||''}"
+        style="font-size:11px;padding:5px 8px;border-radius:6px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-weight:600;width:100%;">`;
+    list.appendChild(div);
+  }
+}
 
-  return(
-    <div style={{maxWidth:500,margin:'0 auto',minHeight:'100vh',background:'#0D0F14',paddingBottom:100}}>
+async function salvarAluno(){
+  const nome=document.getElementById('f_nome').value.trim();
+  if(!nome){alert('Informe o nome do aluno.');return;}
+  const qtd=parseInt(document.getElementById('f_qtdAulas').value)||8;
+  const aulas=[];
+  for(let i=0;i<qtd;i++) aulas.push({
+    label:`Aula ${i+1}`,
+    done:document.getElementById(`ck_${i}`).checked,
+    date:document.getElementById(`dt_${i}`).value,
+    nota:document.getElementById(`nt_${i}`)?.value||''
+  });
+  const dados={nome,tipo:document.getElementById('f_tipo').value,status:document.getElementById('f_status').value,
+    qtdAulas:qtd,valor:parseFloat(document.getElementById('f_valor').value)||0,
+    dataPag:document.getElementById('f_dataPag').value,numPacote:parseInt(document.getElementById('f_numPacote').value)||1,
+    obs:document.getElementById('f_obs').value,aulas};
+  if(editingId){
+    const idx=alunos.findIndex(a=>a.id===editingId);
+    alunos[idx]={...alunos[idx],...dados};
+    await save(alunos[idx]);
+    const idEditado = editingId;
+    closeNewModal();
+    renderAll();
+    openDetail(idEditado);
+  } else {
+    const novo={id:uid(),historico:[],...dados};
+    alunos.push(novo);
+    await save(novo);
+    closeNewModal();
+    renderAll();
+  }
+}
 
-      {/* header */}
-      <div style={{padding:'56px 20px 20px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-        <div>
-          <p style={{margin:0,fontSize:10,fontWeight:800,color:'#3A3E55',letterSpacing:'.15em',textTransform:'uppercase'}}>
-            {saving?'⏳ Salvando...':'☁️ Sincronizado'}
-          </p>
-          <h2 className="syne" style={{margin:'4px 0 0',fontSize:22,fontWeight:800,color:'#E8EAF0'}}>
-            {user.displayName||user.email?.split('@')[0]}
-          </h2>
+// ─────────────── MODAL DETALHE ───────────────
+function openDetail(id){
+  viewingId=id;
+  const a=alunos.find(x=>x.id===id);
+  document.getElementById('detail_nome').textContent=a.nome;
+  const done=a.aulas.filter(x=>x.done).length, total=a.aulas.length;
+  const pct=total?Math.round(done/total*100):0;
+  const fillClass=pct>=90?'danger':pct>=70?'warning':'';
+  const tipoLabel={personal:'Personal',tercas:'Terças & Quintas',sabados:'Sábados'};
+  const statusLabel={ativo:'Pacote ativo',encerrando:'Encerrando',novo:'Novo'};
+
+  const hist=a.historico||[];
+
+  const checksHtml=a.aulas.map((au,i)=>`
+    <div class="check-row" style="flex-direction:column;align-items:stretch;gap:5px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" ${au.done?'checked':''} onchange="toggleAula('${id}',${i},this.checked)">
+        <span class="${au.done?'done':''}">${au.label}</span>
+        ${au.date?`<span class="check-date-badge">📅 ${fmtDate(au.date)}</span>`
+          :`<input type="date" style="padding:3px 7px;font-size:11px;width:135px;" value="" onchange="setAulaDate('${id}',${i},this.value)">`}
+      </div>
+      ${au.nota?`<div style="font-size:11px;color:var(--gold);padding:2px 4px;background:var(--gold-dim);border-radius:4px;">📝 ${au.nota}</div>`:''}
+    </div>`).join('');
+
+  const histHtml = hist.length ? hist.slice().reverse().map((h,hi)=>{
+    const hIdx = hist.length - 1 - hi;
+    const aulasDoHist = h.aulas || [];
+    const aulasHtml = aulasDoHist.length ? aulasDoHist.map((au,ai)=>
+      `<div class="check-row">
+        <input type="checkbox" ${au.done?'checked':''} data-aluno="${id}" data-hIdx="${hIdx}" data-ai="${ai}" onchange="toggleHistAula(this)">
+        <span class="${au.done?'done':''}">${au.label}</span>
+        ${au.date
+          ? `<span class="check-date-badge" style="cursor:pointer;" onclick="editHistData(this,'${id}',${hIdx},${ai})">📅 ${fmtDate(au.date)}</span>`
+          : `<input type="date" style="padding:3px 7px;font-size:11px;width:135px;" value="" onchange="setHistAulaDate('${id}',${hIdx},${ai},this.value)">`}
+      </div>`).join('')
+    : `<div style="color:var(--text-dim);font-size:12px;padding:8px 0;">Aulas não registradas neste pacote.</div>`;
+
+    return `<div class="hist-item" id="histitem${hIdx}">
+      <div class="hist-item-header">
+        <span class="hist-pacote">Pacote ${h.numPacote} — ${h.qtdAulas} aulas</span>
+        <span class="hist-valor">R$ ${(h.valor||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</span>
+      </div>
+      <div class="hist-meta">Pago em: ${h.dataPag?fmtDate(h.dataPag):'–'} &nbsp;|&nbsp; ${h.aulasConcluidas||0}/${h.qtdAulas} aulas concluídas</div>
+      <div class="hist-progress" style="margin-top:6px;display:flex;align-items:center;gap:8px;">
+        <div class="progress-bar" style="height:4px;flex:1;">
+          <div class="progress-fill" style="width:${Math.round((h.aulasConcluidas||0)/h.qtdAulas*100)}%"></div>
         </div>
-        <div style={{display:'flex',gap:8,alignItems:'center'}}>
-          <button onClick={()=>doExport(user.email,txs.filter(t=>!t.investmentType))} title="Exportar"
-            style={{background:'rgba(34,197,94,.1)',border:'1px solid rgba(34,197,94,.2)',borderRadius:12,padding:10,cursor:'pointer',display:'flex'}}>
-            <I.Dl s={16} c="#22C55E"/>
-          </button>
-          <button onClick={()=>impRef.current.click()} title="Importar"
-            style={{background:'rgba(139,92,246,.1)',border:'1px solid rgba(139,92,246,.2)',borderRadius:12,padding:10,cursor:'pointer',display:'flex'}}>
-            <I.Ul s={16} c="#8B5CF6"/>
-          </button>
-          <input ref={impRef} type="file" accept=".json" style={{display:'none'}} onChange={e=>{
-            const f=e.target.files[0];if(!f)return;
-            doImport(f,txs,async m=>{await upd(m);toast_(`${m.length-txs.length} importados!`);},m=>toast_(m,false));
-            e.target.value='';
-          }}/>
-          <button onClick={logout} title="Sair"
-            style={{background:'rgba(248,113,113,.1)',border:'1px solid rgba(248,113,113,.2)',borderRadius:12,padding:10,cursor:'pointer',display:'flex'}}>
-            <I.Out s={16} c="#F87171"/>
-          </button>
-        </div>
-      </div>
-
-      {/* seletor de ano */}
-      <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:16,padding:'0 20px 16px'}}>
-        <button onClick={()=>setSelY(y=>y-1)} style={{background:'#1A1D26',border:'1px solid rgba(255,255,255,.06)',borderRadius:10,padding:8,cursor:'pointer',display:'flex'}}><I.ChL s={16} c="#5A5E75"/></button>
-        <span className="syne" style={{fontSize:18,fontWeight:800,color:'#E8EAF0',minWidth:60,textAlign:'center'}}>{selY}</span>
-        <button onClick={()=>setSelY(y=>y+1)} style={{background:'#1A1D26',border:'1px solid rgba(255,255,255,.06)',borderRadius:10,padding:8,cursor:'pointer',display:'flex'}}><I.ChR s={16} c="#5A5E75"/></button>
-      </div>
-
-      {/* abas meses */}
-      <div className="noscroll" style={{display:'flex',gap:6,overflowX:'auto',padding:'0 20px 20px'}}>
-        {[[-1,'TODOS'],[-2,'APLIC.'],...MNAMES.map((m,i)=>[i,m.slice(0,3).toUpperCase()])].map(([i,lbl])=>(
-          <button key={i} onClick={()=>setSelM(i)}
-            style={{flexShrink:0,padding:'10px 16px',borderRadius:14,border:'none',cursor:'pointer',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:11,letterSpacing:'.08em',transition:'all .2s',
-              ...(selM===i?{background:'linear-gradient(135deg,#6366F1,#8B5CF6)',color:'#fff',boxShadow:'0 6px 20px rgba(99,102,241,.35)'}:{background:'#12141C',color:'#3A3E55',border:'1px solid rgba(255,255,255,.04)'})}}>
-            {lbl}
-          </button>
-        ))}
-      </div>
-
-      {/* conteúdo */}
-      <div style={{padding:'0 20px'}}>
-
-        {/* aba aplicações */}
-        {isInv?(
-          <div className="fu" style={{display:'flex',flexDirection:'column',gap:16}}>
-            {invs.map(inv=>(
-              <div key={inv.type} style={{background:'linear-gradient(135deg,#1A1D26,#12141C)',border:'1px solid rgba(255,255,255,.08)',borderRadius:28,padding:24}}>
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:20}}>
-                  <div>
-                    <p className="syne" style={{margin:0,fontSize:10,fontWeight:800,color:'#4A4E65',letterSpacing:'.15em',textTransform:'uppercase'}}>{inv.type}</p>
-                    <p className="syne" style={{margin:'6px 0 0',fontSize:26,fontWeight:800,color:'#818CF8'}}>{fmt(inv.bal)}</p>
-                  </div>
-                  <div style={{background:'rgba(99,102,241,.1)',borderRadius:16,padding:12}}><I.Bank s={22} c="#818CF8"/></div>
-                </div>
-                <button onClick={()=>{setInvF(f=>({...f,invType:inv.type}));setShowInv(true);}}
-                  style={{width:'100%',background:'rgba(99,102,241,.08)',border:'1px solid rgba(99,102,241,.15)',borderRadius:14,padding:12,color:'#818CF8',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:10,letterSpacing:'.12em',textTransform:'uppercase',cursor:'pointer'}}>
-                  + Nova Movimentação
-                </button>
-              </div>
-            ))}
-          </div>
-
-        ):(
-          <div className="fu" style={{display:'flex',flexDirection:'column',gap:14}}>
-
-            {/* saldo geral */}
-            <div style={{background:'linear-gradient(135deg,#1E40AF,#3730A3)',borderRadius:28,padding:26,display:'flex',justifyContent:'space-between',alignItems:'center',boxShadow:'0 20px 50px rgba(30,64,175,.4)'}}>
-              <div>
-                <p className="syne" style={{margin:0,fontSize:10,fontWeight:800,color:'rgba(255,255,255,.5)',letterSpacing:'.15em',textTransform:'uppercase'}}>Saldo Geral Acumulado</p>
-                <p className="syne" style={{margin:'8px 0 4px',fontSize:30,fontWeight:800,color:'#fff'}}>{fmt(globalBal)}</p>
-                <p style={{margin:0,fontSize:10,color:'rgba(255,255,255,.4)'}}>Receitas − Despesas pagas</p>
-              </div>
-              <div style={{background:'rgba(255,255,255,.1)',borderRadius:20,padding:14}}><I.Cloud s={26} c="#fff"/></div>
-            </div>
-
-            {/* resumo entradas / saídas */}
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-              <div style={{background:'#12141C',border:'1px solid rgba(255,255,255,.06)',borderRadius:20,padding:16}}>
-                <p style={{margin:'0 0 4px',fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.1em',display:'flex',alignItems:'center',gap:4}}>
-                  <I.Up s={10} c="#22C55E"/> {selM===-1?'Entradas (ano)':'Entradas pagas'}
-                </p>
-                <p className="syne" style={{margin:0,fontSize:17,fontWeight:800,color:'#22C55E'}}>{fmt(summary.income)}</p>
-              </div>
-              <div style={{background:'#12141C',border:'1px solid rgba(255,255,255,.06)',borderRadius:20,padding:16}}>
-                <p style={{margin:'0 0 4px',fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.1em',display:'flex',alignItems:'center',gap:4}}>
-                  <I.Down s={10} c="#F87171"/> {selM===-1?'Saídas (ano)':'Saídas pagas'}
-                </p>
-                <p className="syne" style={{margin:0,fontSize:17,fontWeight:800,color:'#F87171'}}>{fmt(summary.expense)}</p>
-              </div>
-            </div>
-
-            {/* em aberto */}
-            {summary.pending>0&&(
-              <div style={{background:'rgba(245,158,11,.07)',border:'1px solid rgba(245,158,11,.25)',borderRadius:16,padding:'14px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                <div style={{display:'flex',alignItems:'center',gap:8}}>
-                  <I.Warn s={16} c="#F59E0B"/>
-                  <span style={{fontSize:12,fontWeight:700,color:'#F59E0B'}}>Despesas em aberto</span>
-                </div>
-                <span className="syne" style={{fontSize:15,fontWeight:800,color:'#F59E0B'}}>{fmt(summary.pending)}</span>
-              </div>
-            )}
-
-            {/* lista */}
-            <div>
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14,padding:'0 2px'}}>
-                <p className="syne" style={{margin:0,fontSize:15,fontWeight:800,color:'#E8EAF0'}}>
-                  {selM===-1?`Todos — ${selY}`:MNAMES[selM]}
-                </p>
-                <span style={{background:'#1A1D26',border:'1px solid rgba(255,255,255,.06)',borderRadius:8,padding:'4px 10px',fontSize:10,fontWeight:700,color:'#4A4E65',textTransform:'uppercase'}}>
-                  {filtered.length} itens
-                </span>
-              </div>
-              <div style={{display:'flex',flexDirection:'column',gap:12}}>
-                {filtered.map(t=><TxCard key={t.id} t={t} onEdit={openEdit} onDel={del} onPay={pay}/>)}
-                {filtered.length===0&&(
-                  <div style={{textAlign:'center',padding:'60px 20px',background:'#12141C',borderRadius:26,border:'2px dashed rgba(255,255,255,.05)'}}>
-                    <div style={{marginBottom:12,display:'flex',justifyContent:'center'}}><I.Cal s={34} c="#2A2D3A"/></div>
-                    <p style={{color:'#3A3E55',fontSize:14,margin:0,fontStyle:'italic'}}>Nenhum lançamento encontrado.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* toast */}
-      {toast&&(
-        <div style={{position:'fixed',bottom:100,left:'50%',transform:'translateX(-50%)',
-          background:toast.ok?'#1A2E1A':'#2E1A1A',
-          border:`1px solid ${toast.ok?'rgba(34,197,94,.3)':'rgba(239,68,68,.3)'}`,
-          borderRadius:16,padding:'12px 20px',
-          color:toast.ok?'#22C55E':'#F87171',
-          fontSize:13,fontWeight:600,zIndex:60,whiteSpace:'nowrap',
-          boxShadow:'0 8px 32px rgba(0,0,0,.4)',animation:'fadeUp .3s ease both'}}>
-          {toast.ok?'✓ ':'✕ '}{toast.msg}
-        </div>
-      )}
-
-      {/* FAB */}
-      {!isInv&&(
-        <button onClick={openAdd} style={{position:'fixed',bottom:28,right:20,width:58,height:58,borderRadius:20,
-          background:'linear-gradient(135deg,#6366F1,#8B5CF6)',border:'none',cursor:'pointer',
-          display:'flex',alignItems:'center',justifyContent:'center',
-          boxShadow:'0 16px 40px rgba(99,102,241,.5)',zIndex:40}}>
-          <I.Plus s={26} c="#fff"/>
+        <button data-hid="hlist${hIdx}" onclick="toggleHistAulas(this)"
+          style="font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;white-space:nowrap;">
+          Ver aulas ▾
         </button>
-      )}
+        <button onclick="reativarPacote('${id}',${hIdx})"
+          style="font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid rgba(76,175,122,.3);background:var(--green-dim);color:var(--green);cursor:pointer;white-space:nowrap;">
+          ↩ Reativar
+        </button>
+        <button onclick="abrirEditHist('${id}',${hIdx})"
+          style="font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid rgba(201,168,76,.3);background:var(--gold-dim);color:var(--gold);cursor:pointer;white-space:nowrap;">
+          ✏️
+        </button>
+        <button data-aluno="${id}" data-hIdx="${hIdx}" onclick="excluirHistorico(this)"
+          style="font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--red-dim);background:transparent;color:var(--red);cursor:pointer;white-space:nowrap;">
+          🗑
+        </button>
+      </div>
+      <div id="hlist${hIdx}" style="margin-top:8px;display:none;">
+        <div class="checklist-full">${aulasHtml}</div>
+      </div>
+    </div>`;
+  }).join('')
+  : `<div style="text-align:center;padding:30px;color:var(--text-dim);font-size:13px;">Nenhum pacote anterior ainda.<br>Após a primeira renovação o histórico aparece aqui.</div>`;
 
-      {/* modal transação */}
-      {showTx&&(
-        <Modal onClose={()=>{setShowTx(false);setEditId(null);}}>
-          <p className="syne" style={{margin:'0 0 20px',fontSize:20,fontWeight:800,color:'#E8EAF0'}}>
-            {editId?'Editar Lançamento':selM===-1?'Novo Lançamento':`Lançar em ${MNAMES[selM]}`}
-          </p>
-          <form onSubmit={submitTx} style={{display:'flex',flexDirection:'column',gap:12}} autoComplete="off">
-            {/* receita / despesa */}
-            <div style={{display:'flex',gap:6,background:'#14161F',borderRadius:14,padding:5}}>
-              {[['income','Receita','#22C55E'],['expense','Despesa','#F87171']].map(([v,l,c])=>(
-                <button key={v} type="button" onClick={()=>setForm(f=>({...f,type:v}))}
-                  style={{flex:1,padding:12,borderRadius:10,border:'none',cursor:'pointer',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:12,letterSpacing:'.06em',transition:'all .2s',
-                    ...(form.type===v?{background:'#1E2132',color:c,boxShadow:'0 4px 12px rgba(0,0,0,.3)'}:{background:'transparent',color:'#3A3E55'})}}>
-                  {l.toUpperCase()}
-                </button>
-              ))}
-            </div>
-            {/* descrição */}
-            <div>
-              <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>Descrição</label>
-              <input className="field" type="text" placeholder="Ex: Salário, Enel, Aluguel..." value={form.desc} onChange={e=>setForm(f=>({...f,desc:e.target.value}))} required/>
-            </div>
-            {/* valor */}
-            <div>
-              <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>Valor (R$)</label>
-              <input className="field syne" type="number" step="0.01" min="0.01" placeholder="0,00"
-                style={{fontSize:22,fontWeight:800,color:'#818CF8'}}
-                value={form.amt} onChange={e=>setForm(f=>({...f,amt:e.target.value}))} required/>
-            </div>
-            {/* vencimento */}
-            <div>
-              <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>Vencimento</label>
-              <input className="field" type="date" required autoComplete="off" value={form.due} onChange={e=>setForm(f=>({...f,due:e.target.value}))} style={{fontSize:13}}/>
-            </div>
-            {/* pagamento — toggle seguro para iOS */}
-            <PaidToggle
-              paid={form.paid}
-              onChange={v=>setForm(f=>({...f,paid:v}))}
-            />
-            {/* categoria */}
-            <div>
-              <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>Categoria</label>
-              <select className="field" value={form.cat} onChange={e=>setForm(f=>({...f,cat:e.target.value}))}>
-                {CATS.map(c=><option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <button className="btn" type="submit" style={{marginTop:6}}>Salvar Lançamento</button>
-          </form>
-        </Modal>
-      )}
-
-      {/* modal investimento */}
-      {showInv&&(
-        <Modal onClose={()=>setShowInv(false)}>
-          <p className="syne" style={{margin:'0 0 20px',fontSize:20,fontWeight:800,color:'#E8EAF0'}}>Nova Movimentação</p>
-          <form onSubmit={submitInv} style={{display:'flex',flexDirection:'column',gap:12}}>
-            <div style={{background:'#14161F',borderRadius:14,padding:'14px 16px'}}>
-              <p style={{margin:0,fontSize:14,fontWeight:700,color:'#818CF8'}}>{invF.invType}</p>
-            </div>
-            <div>
-              <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>Tipo</label>
-              <div style={{display:'flex',gap:5,background:'#14161F',borderRadius:14,padding:5}}>
-                {['Saldo Inicial','Aporte','Juros'].map(t=>(
-                  <button key={t} type="button" onClick={()=>setInvF(f=>({...f,action:t}))}
-                    style={{flex:1,padding:'10px 4px',borderRadius:10,border:'none',cursor:'pointer',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:9,letterSpacing:'.06em',textTransform:'uppercase',transition:'all .2s',
-                      ...(invF.action===t?{background:'linear-gradient(135deg,#6366F1,#8B5CF6)',color:'#fff'}:{background:'transparent',color:'#3A3E55'})}}>
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>Valor R$</label>
-              <input className="field syne" type="number" step="0.01" min="0.01" placeholder="0,00"
-                style={{fontSize:22,fontWeight:800,color:'#818CF8'}}
-                value={invF.amt} onChange={e=>setInvF(f=>({...f,amt:e.target.value}))} required/>
-            </div>
-            <div>
-              <label style={{fontSize:9,fontWeight:800,color:'#4A4E65',textTransform:'uppercase',letterSpacing:'.12em',display:'block',marginBottom:6,marginLeft:4}}>Data</label>
-              <input className="field" type="date" required value={invF.date} onChange={e=>setInvF(f=>({...f,date:e.target.value}))} style={{fontSize:13}}/>
-            </div>
-            <button className="btn" type="submit" style={{marginTop:6,background:'linear-gradient(135deg,#4F46E5,#7C3AED)'}}>Registrar na Carteira</button>
-          </form>
-        </Modal>
-      )}
+  document.getElementById('detailBody').innerHTML=`
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin:-18px -22px 16px;padding:0 22px;">
+      <button onclick="detailTab('resumo',this)" class="dtab dtab-active">Resumo</button>
+      <button onclick="detailTab('aulas',this)" class="dtab">✅ Aulas (${done}/${total})</button>
+      <button onclick="detailTab('historico',this)" class="dtab">📦 Histórico (${hist.length})</button>
     </div>
+    <div id="dpanel-resumo">
+      <div class="detail-row"><span class="detail-key">Tipo</span><span class="detail-val">${tipoLabel[a.tipo]}</span></div>
+      <div class="detail-row"><span class="detail-key">Status</span><span class="detail-val">${statusLabel[a.status]}</span></div>
+      <div class="detail-row"><span class="detail-key">Pacote nº</span><span class="detail-val">${a.numPacote}</span></div>
+      <div class="detail-row"><span class="detail-key">Valor</span><span class="detail-val" style="color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:17px;">R$ ${(a.valor||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</span></div>
+      <div class="detail-row"><span class="detail-key">Data pagamento</span><span class="detail-val">${a.dataPag?fmtDate(a.dataPag):'–'}</span></div>
+      ${a.obs?`<div class="detail-row"><span class="detail-key">Obs</span><span class="detail-val" style="font-size:12px;color:var(--text-muted);max-width:260px;text-align:right;">${a.obs}</span></div>`:''}
+      <div class="progress-detail" style="margin-top:14px;">
+        <div class="progress-header"><span style="color:var(--text-muted)">Progresso</span><span style="color:var(--gold);font-weight:600;">${done}/${total} (${pct}%)</span></div>
+        <div class="progress-bar" style="height:6px;margin-top:6px;"><div class="progress-fill ${fillClass}" style="width:${pct}%"></div></div>
+      </div>
+    </div>
+    <div id="dpanel-aulas" style="display:none;"><div class="checklist-full">${checksHtml}</div></div>
+    <div id="dpanel-historico" style="display:none;"><div class="hist-block">${histHtml}</div></div>`;
+
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function toggleHistAula(el){
+  const alunoId = el.getAttribute('data-aluno');
+  const hIdx    = parseInt(el.getAttribute('data-hIdx'));
+  const ai      = parseInt(el.getAttribute('data-ai'));
+  const a = alunos.find(x=>x.id===alunoId);
+  a.historico[hIdx].aulas[ai].done = el.checked;
+  if(el.checked && !a.historico[hIdx].aulas[ai].date)
+    a.historico[hIdx].aulas[ai].date = new Date().toISOString().split('T')[0];
+  a.historico[hIdx].aulasConcluidas = a.historico[hIdx].aulas.filter(x=>x.done).length;
+  save(a);
+  const span = el.nextElementSibling;
+  if(span) span.className = el.checked ? 'done' : '';
+}
+
+function setHistAulaDate(alunoId, hIdx, ai, val){
+  const a = alunos.find(x=>x.id===alunoId);
+  a.historico[hIdx].aulas[ai].date = val;
+  save(a);
+}
+
+function editHistData(badge, alunoId, hIdx, ai){
+  // troca o badge por um input de data para edição
+  const a = alunos.find(x=>x.id===alunoId);
+  const atual = a.historico[hIdx].aulas[ai].date || '';
+  const input = document.createElement('input');
+  input.type='date'; input.value=atual;
+  input.style.cssText='padding:3px 7px;font-size:11px;width:135px;background:var(--surface2);border:1px solid var(--gold);border-radius:6px;color:var(--text);';
+  input.onchange = function(){
+    a.historico[hIdx].aulas[ai].date = this.value;
+    save(a);
+    // volta ao badge
+    const novo = document.createElement('span');
+    novo.className='check-date-badge';
+    novo.style.cursor='pointer';
+    novo.textContent='📅 '+fmtDate(this.value);
+    novo.onclick = ()=>editHistData(novo, alunoId, hIdx, ai);
+    this.replaceWith(novo);
+  };
+  badge.replaceWith(input);
+  input.focus();
+}
+
+function excluirHistorico(btn){
+  const alunoId = btn.getAttribute('data-aluno');
+  const hIdx    = parseInt(btn.getAttribute('data-hIdx'));
+  const a = alunos.find(x=>x.id===alunoId);
+  const h = a.historico[hIdx];
+  confirmar(
+    `Excluir Pacote ${h.numPacote} (${h.qtdAulas} aulas, R$ ${(h.valor||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}) do histórico?`,
+    async ()=>{
+      a.historico.splice(hIdx,1);
+      await save(a);
+      const item = document.getElementById('histitem'+hIdx);
+      if(item) item.remove();
+      const tabBtn = document.querySelector('.dtab:nth-child(3)');
+      if(tabBtn) tabBtn.textContent = `📦 Histórico (${a.historico.length})`;
+    }
   );
 }
 
-// versão do app — atualizar a cada deploy para confirmar cache limpo
-const APP_VERSION = 'v5 · 09/03/2026';
+// ─────────────── REATIVAR PACOTE DO HISTÓRICO ───────────────
+function reativarPacote(alunoId, hIdx){
+  const a = alunos.find(x=>x.id===alunoId);
+  const h = a.historico[hIdx];
+  const opcoesQuadros = quadros.map(q=>`<option value="${q.id}"${q.id===a.tipo?' selected':''}>${q.nome}</option>`).join('');
 
-// exibir versão discreta no canto inferior direito
-const VersionTag = () => (
-  <div style={{
-    position:'fixed', bottom:8, right:12,
-    fontSize:9, color:'#2A2D3A', fontFamily:'DM Sans,sans-serif',
-    pointerEvents:'none', userSelect:'none', zIndex:0,
-  }}>{APP_VERSION}</div>
-);
+  document.getElementById('confirmMsg').innerHTML = `
+    <div style="margin-bottom:8px;">Reativar <b>Pacote ${h.numPacote}</b> de <b>${a.nome}</b>?</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">O pacote atual será arquivado no histórico e este pacote voltará com todas as aulas e datas.</div>
+    <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:6px;">Enviar para o quadro:</label>
+    <select id="destReativar" style="width:100%;padding:9px 11px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;">
+      ${opcoesQuadros}
+    </select>`;
 
-function Root(){
-  return <>
-    <App/>
-    <VersionTag/>
-  </>;
+  document.getElementById('confirmOkBtn').textContent = '↩ Reativar';
+  document.getElementById('confirmOkBtn').style.background = 'var(--green)';
+  document.getElementById('confirmOkBtn').style.color = '#1a1206';
+  document.getElementById('confirmOkBtn').style.border = 'none';
+  document.getElementById('confirmOkBtn').onclick = async ()=>{
+    const destino = document.getElementById('destReativar').value;
+    fecharConfirm();
+
+    // arquivar pacote atual no histórico
+    const doneAtual = a.aulas.filter(x=>x.done).length;
+    a.historico.push({
+      numPacote: a.numPacote,
+      qtdAulas: a.qtdAulas,
+      valor: a.valor,
+      dataPag: a.dataPag,
+      aulasConcluidas: doneAtual,
+      aulas: a.aulas.map(au=>({...au}))
+    });
+
+    // reativar o pacote histórico como atual
+    a.numPacote = h.numPacote;
+    a.qtdAulas = h.qtdAulas;
+    a.valor = h.valor;
+    a.dataPag = h.dataPag;
+    a.status = 'ativo';
+    a.aulas = (h.aulas||[]).map(au=>({...au}));
+    a.tipo = destino;
+
+    // remover do histórico
+    a.historico.splice(hIdx, 1);
+
+    await save(a);
+    closeDetail();
+    renderBoard();
+    renderAll();
+    openDetail(alunoId);
+  };
+  document.getElementById('confirmModal').classList.add('open');
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<Root/>);
+// ─────────────── EDITAR HISTÓRICO ───────────────
+let editHistAlunoId = null, editHistIdx = null;
+
+function abrirEditHist(alunoId, hIdx){
+  editHistAlunoId = alunoId;
+  editHistIdx = hIdx;
+  const a = alunos.find(x=>x.id===alunoId);
+  const h = a.historico[hIdx];
+  document.getElementById('editHistTitle').textContent = `Editar Pacote ${h.numPacote} — ${a.nome}`;
+  document.getElementById('eh_qtd').value = h.qtdAulas;
+  document.getElementById('eh_valor').value = h.valor||0;
+  document.getElementById('eh_dataPag').value = h.dataPag||'';
+  document.getElementById('eh_numPacote').value = h.numPacote;
+  gerarAulasHist();
+  document.getElementById('editHistModal').classList.add('open');
+}
+
+function fecharEditHist(){
+  document.getElementById('editHistModal').classList.remove('open');
+}
+
+function gerarAulasHist(){
+  const a = alunos.find(x=>x.id===editHistAlunoId);
+  const h = a?.historico[editHistIdx];
+  const qtd = parseInt(document.getElementById('eh_qtd').value) || (h?.qtdAulas||8);
+  const list = document.getElementById('aulaListHist');
+
+  // Preservar estado atual do DOM
+  const estadoAtual = [];
+  list.querySelectorAll('.aula-item').forEach((item,i)=>{
+    estadoAtual[i]={
+      done: item.querySelector('input[type="checkbox"]').checked,
+      date: item.querySelector('input[type="date"]').value,
+      nota: item.querySelector('input[type="text"]')?.value||''
+    };
+  });
+
+  const existing = h?.aulas || [];
+  list.innerHTML='';
+  for(let i=0;i<qtd;i++){
+    const ex = estadoAtual[i] !== undefined ? estadoAtual[i] : (existing[i]||{done:false,date:'',nota:''});
+    const div = document.createElement('div');
+    div.className='aula-item';
+    div.style.cssText='flex-direction:column;align-items:stretch;gap:6px;';
+    div.innerHTML=`
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="hck_${i}" ${ex.done?'checked':''} onchange="this.parentElement.parentElement.querySelector('.aula-item-label').className='aula-item-label'+(this.checked?' done':'')">
+        <span class="aula-item-label${ex.done?' done':''}">Aula ${i+1}</span>
+        <input type="date" class="aula-date-input" id="hdt_${i}" value="${ex.date||''}">
+        <button type="button" onclick="document.getElementById('hdt_${i}').value=''" title="Limpar data"
+          style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:14px;padding:2px 4px;flex-shrink:0;"
+          onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-dim)'">✕</button>
+      </div>
+      <input type="text" id="hnt_${i}" placeholder="Observação da aula" value="${ex.nota||''}"
+        style="font-size:11px;padding:5px 8px;border-radius:6px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-weight:600;width:100%;">`;
+    list.appendChild(div);
+  }
+}
+
+async function salvarEditHist(){
+  const a = alunos.find(x=>x.id===editHistAlunoId);
+  const h = a.historico[editHistIdx];
+  const qtd = parseInt(document.getElementById('eh_qtd').value)||h.qtdAulas;
+  const aulas = [];
+  for(let i=0;i<qtd;i++) aulas.push({
+    label:`Aula ${i+1}`,
+    done: document.getElementById(`hck_${i}`).checked,
+    date: document.getElementById(`hdt_${i}`).value,
+    nota: document.getElementById(`hnt_${i}`)?.value||''
+  });
+  h.qtdAulas = qtd;
+  h.valor = parseFloat(document.getElementById('eh_valor').value)||0;
+  h.dataPag = document.getElementById('eh_dataPag').value;
+  h.numPacote = parseInt(document.getElementById('eh_numPacote').value)||h.numPacote;
+  h.aulasConcluidas = aulas.filter(x=>x.done).length;
+  h.aulas = aulas;
+  await save(a);
+  fecharEditHist();
+  openDetail(editHistAlunoId);
+}
+
+function toggleHistAulas(btn){
+  const id = btn.getAttribute('data-hid');
+  const el = document.getElementById(id);
+  const aberto = el.style.display === 'block';
+  el.style.display = aberto ? 'none' : 'block';
+  btn.textContent = aberto ? 'Ver aulas ▾' : 'Fechar ▴';
+}
+
+function detailTab(tab, btn){
+  ['resumo','aulas','historico'].forEach(p=>{
+    document.getElementById('dpanel-'+p).style.display = p===tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.dtab').forEach(b=>b.classList.remove('dtab-active'));
+  btn.classList.add('dtab-active');
+}
+
+function closeDetail(){document.getElementById('detailModal').classList.remove('open');renderBoard();renderAll();}
+
+function toggleAula(id,idx,val){
+  const a=alunos.find(x=>x.id===id);
+  a.aulas[idx].done=val;
+  if(val&&!a.aulas[idx].date) a.aulas[idx].date=new Date().toISOString().split('T')[0];
+  save(a);
+}
+function setAulaDate(id,idx,val){const a=alunos.find(x=>x.id===id);a.aulas[idx].date=val;save(a);}
+function deletarAluno(){
+  confirmar(
+    `Mover este aluno para a lixeira?`,
+    async ()=>{
+      const a = alunos.find(x=>x.id===viewingId);
+      await db.collection('lixeira').doc(a.id).set({
+        ...a,
+        _tipo: 'aluno',
+        _deletadoEm: new Date().toISOString()
+      });
+      await db.collection('alunos').doc(viewingId).delete();
+      alunos = alunos.filter(x=>x.id!==viewingId);
+      closeDetail();
+    }
+  );
+}
+function editarAluno(){
+  closeDetail();editingId=viewingId;
+  const a=alunos.find(x=>x.id===editingId);
+  document.getElementById('modalTitle').textContent='Editar aluno';
+  document.getElementById('f_nome').value=a.nome;
+  atualizarSelectTipo(a.tipo);
+  document.getElementById('f_status').value=a.status;
+  document.getElementById('f_qtdAulas').value=a.qtdAulas;
+  document.getElementById('f_valor').value=a.valor;
+  document.getElementById('f_dataPag').value=a.dataPag;
+  document.getElementById('f_numPacote').value=a.numPacote;
+  document.getElementById('f_obs').value=a.obs;
+  document.getElementById('aulaList').innerHTML=''; // limpa DOM antigo
+  gerarAulas();
+  document.getElementById('newModal').classList.add('open');
+}
+
+function abrirRenovar(){
+  renovandoId=viewingId;
+  const a=alunos.find(x=>x.id===renovandoId);
+  const done=a.aulas.filter(x=>x.done).length;
+  document.getElementById('renovInfo').innerHTML=
+    `<b>${a.nome}</b><br>Pacote atual: nº ${a.numPacote} — ${done}/${a.aulas.length} aulas concluídas<br>
+     Ao confirmar, o pacote atual será arquivado no histórico e um <b>novo Pacote ${a.numPacote+1}</b> será criado com aulas zeradas.`;
+  document.getElementById('rv_qtd').value=a.qtdAulas;
+  document.getElementById('rv_valor').value=a.valor;
+  document.getElementById('rv_data').value=new Date().toISOString().split('T')[0];
+  closeDetail();
+  document.getElementById('renovarModal').classList.add('open');
+}
+function closeRenovar(){document.getElementById('renovarModal').classList.remove('open');}
+async function confirmarRenovar(){
+  const a=alunos.find(x=>x.id===renovandoId);
+  const done=a.aulas.filter(x=>x.done).length;
+  // arquivar pacote atual no histórico
+  (a.historico=a.historico||[]).push({
+    numPacote:a.numPacote, qtdAulas:a.qtdAulas, valor:a.valor,
+    dataPag:a.dataPag, aulasConcluidas:done,
+    aulas: a.aulas.map(au=>({...au}))
+  });
+  // criar novo pacote com aulas 100% zeradas
+  const novoQtd=parseInt(document.getElementById('rv_qtd').value)||a.qtdAulas;
+  a.numPacote=a.numPacote+1;
+  a.qtdAulas=novoQtd;
+  a.valor=parseFloat(document.getElementById('rv_valor').value)||a.valor;
+  a.dataPag=document.getElementById('rv_data').value;
+  a.status='ativo';
+  a.aulas=Array.from({length:novoQtd},(_,i)=>({label:`Aula ${i+1}`,done:false,date:'',nota:''}));
+  await save(a);
+  closeRenovar();
+  renderAll();
+  // reabrir detalhe já com o novo pacote
+  openDetail(a.id);
+}
+
+// ─────────────── LIXEIRA ───────────────
+async function carregarLixeira(){
+  const body = document.getElementById('lixeiraBody');
+  body.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:20px;">Carregando…</div>';
+  const snap = await db.collection('lixeira').get();
+  const itens = snap.docs.map(d=>({_id:d.id,...d.data()}));
+  if(!itens.length){
+    body.innerHTML = '<div class="no-data">Lixeira vazia. Nenhum item deletado.</div>';
+    return;
+  }
+  const alunos_lx = itens.filter(x=>x._tipo==='aluno');
+  const quadros_lx = itens.filter(x=>x._tipo==='quadro');
+
+  let html = '';
+  if(alunos_lx.length){
+    html += `<div class="rel-section-title" style="margin-bottom:12px;">👤 Alunos deletados</div>`;
+    alunos_lx.forEach((a,idx)=>{
+      const data = a._deletadoEm ? new Date(a._deletadoEm).toLocaleDateString('pt-BR') : '–';
+      const done = (a.aulas||[]).filter(x=>x.done).length;
+      const total = (a.aulas||[]).length;
+      const pct = total ? Math.round(done/total*100) : 0;
+      const tipoLabel = {personal:'Personal',tercas:'Terças & Quintas',sabados:'Sábados'};
+      const hist = a.historico||[];
+
+      // aulas html
+      const aulasHtml = (a.aulas||[]).map((au,ai)=>`
+        <div class="check-row" style="flex-direction:column;align-items:stretch;gap:4px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" ${au.done?'checked':''} onchange="toggleAulaLixeira('${a._id}',${ai},this.checked)">
+            <span class="${au.done?'done':''}">${au.label}</span>
+            ${au.date?`<span class="check-date-badge">📅 ${fmtDate(au.date)}</span>`
+              :`<input type="date" style="padding:3px 7px;font-size:11px;width:135px;" value="" onchange="setAulaDataLixeira('${a._id}',${ai},this.value)">`}
+          </div>
+          ${au.nota?`<div style="font-size:11px;color:var(--gold);padding:2px 4px;background:var(--gold-dim);border-radius:4px;">📝 ${au.nota}</div>`:''}
+        </div>`).join('');
+
+      // histórico html
+      const histHtml = hist.length ? hist.map(h=>`
+        <div class="hist-item">
+          <div class="hist-item-header">
+            <span class="hist-pacote">Pacote ${h.numPacote} — ${h.qtdAulas} aulas</span>
+            <span class="hist-valor">R$ ${(h.valor||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</span>
+          </div>
+          <div class="hist-meta">Pago em: ${h.dataPag?fmtDate(h.dataPag):'–'} &nbsp;|&nbsp; ${h.aulasConcluidas||0}/${h.qtdAulas} concluídas</div>
+        </div>`).join('')
+      : `<div style="color:var(--text-dim);font-size:13px;padding:16px 0;">Nenhum pacote anterior.</div>`;
+
+      html += `<div class="lixeira-item" style="flex-direction:column;align-items:stretch;gap:0;">
+        <!-- cabeçalho clicável -->
+        <div style="display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="toggleLixeiraDetalhe('lxd_${idx}',this)">
+          <div style="flex:1;">
+            <div class="lixeira-nome">${a.nome||'–'}</div>
+            <div class="lixeira-meta">
+              Deletado em: ${data} &nbsp;|&nbsp;
+              ${tipoLabel[a.tipo]||a.tipo} &nbsp;|&nbsp;
+              Pacote nº ${a.numPacote||1} &nbsp;|&nbsp;
+              ${done}/${total} aulas &nbsp;|&nbsp;
+              R$ ${(a.valor||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}
+            </div>
+          </div>
+          <span style="color:var(--text-dim);font-size:16px;" class="lx-arrow">▾</span>
+        </div>
+
+        <!-- detalhe expansível -->
+        <div id="lxd_${idx}" style="display:none;margin-top:14px;border-top:1px solid var(--border);padding-top:14px;">
+
+          <!-- abas internas -->
+          <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px;">
+            <button onclick="lxTab('lxt_resumo_${idx}','lxt_aulas_${idx}','lxt_hist_${idx}',this)" class="dtab dtab-active">Resumo</button>
+            <button onclick="lxTab('lxt_aulas_${idx}','lxt_resumo_${idx}','lxt_hist_${idx}',this)" class="dtab">✅ Aulas (${done}/${total})</button>
+            <button onclick="lxTab('lxt_hist_${idx}','lxt_resumo_${idx}','lxt_aulas_${idx}',this)" class="dtab">📦 Histórico (${hist.length})</button>
+          </div>
+
+          <!-- resumo -->
+          <div id="lxt_resumo_${idx}">
+            <div class="detail-row"><span class="detail-key">Tipo</span><span class="detail-val">${tipoLabel[a.tipo]||a.tipo}</span></div>
+            <div class="detail-row"><span class="detail-key">Status</span><span class="detail-val">${a.status||'–'}</span></div>
+            <div class="detail-row"><span class="detail-key">Pacote nº</span><span class="detail-val">${a.numPacote||1}</span></div>
+            <div class="detail-row"><span class="detail-key">Valor</span><span class="detail-val" style="color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:17px;">R$ ${(a.valor||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</span></div>
+            <div class="detail-row"><span class="detail-key">Data pagamento</span><span class="detail-val">${a.dataPag?fmtDate(a.dataPag):'–'}</span></div>
+            ${a.obs?`<div class="detail-row"><span class="detail-key">Obs</span><span class="detail-val" style="font-size:12px;color:var(--text-muted);max-width:260px;text-align:right;">${a.obs}</span></div>`:''}
+            <div class="progress-detail" style="margin-top:12px;">
+              <div class="progress-header"><span style="color:var(--text-muted)">Progresso</span><span style="color:var(--gold);font-weight:600;">${done}/${total} (${pct}%)</span></div>
+              <div class="progress-bar" style="height:6px;margin-top:6px;"><div class="progress-fill" style="width:${pct}%"></div></div>
+            </div>
+          </div>
+
+          <!-- aulas -->
+          <div id="lxt_aulas_${idx}" style="display:none;">
+            <div class="checklist-full">${aulasHtml||'<div style="color:var(--text-dim);font-size:13px;">Nenhuma aula registrada.</div>'}</div>
+          </div>
+
+          <!-- histórico -->
+          <div id="lxt_hist_${idx}" style="display:none;">
+            <div class="hist-block">${histHtml}</div>
+          </div>
+
+          <!-- ações -->
+          <div style="display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap;">
+            <button onclick="restaurarAluno('${a._id}')" class="btn-renovar" style="font-size:13px;">↩ Restaurar aluno</button>
+            <button onclick="deletarDefinitivo('${a._id}')" class="btn-delete" style="font-size:13px;">✕ Excluir permanentemente</button>
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+
+  if(quadros_lx.length){
+    html += `<div class="rel-section-title" style="margin:20px 0 12px;">📋 Quadros deletados</div>`;
+    quadros_lx.forEach(q=>{
+      const data = q._deletadoEm ? new Date(q._deletadoEm).toLocaleDateString('pt-BR') : '–';
+      html += `<div class="lixeira-item">
+        <div class="lixeira-info">
+          <div class="lixeira-nome">${q.icone||'📅'} ${q.nome||'–'}</div>
+          <div class="lixeira-meta">Deletado em: ${data}</div>
+        </div>
+        <div class="lixeira-actions">
+          <button onclick="restaurarQuadro('${q._id}')" class="btn-renovar" style="font-size:12px;padding:5px 10px;">↩ Restaurar</button>
+          <button onclick="deletarDefinitivo('${q._id}')" class="btn-delete" style="font-size:12px;padding:5px 10px;">✕ Excluir</button>
+        </div>
+      </div>`;
+    });
+  }
+  body.innerHTML = html;
+}
+
+function toggleLixeiraDetalhe(id, header){
+  const el = document.getElementById(id);
+  const arrow = header.querySelector('.lx-arrow');
+  const aberto = el.style.display === 'block';
+  el.style.display = aberto ? 'none' : 'block';
+  arrow.textContent = aberto ? '▾' : '▴';
+}
+
+function lxTab(mostrar, ...esconder){
+  const btn = event.target;
+  document.getElementById(mostrar).style.display='block';
+  esconder.forEach(id=>document.getElementById(id).style.display='none');
+  // atualizar abas ativas
+  const container = btn.closest('[style*="border-bottom"]');
+  if(container) container.querySelectorAll('.dtab').forEach(b=>b.classList.remove('dtab-active'));
+  btn.classList.add('dtab-active');
+}
+
+function toggleAulaLixeira(docId, idx, val){
+  // só visual na lixeira, não salva no Firebase
+}
+function setAulaDataLixeira(docId, idx, val){
+  // só visual na lixeira, não salva no Firebase
+}
+
+async function restaurarAluno(docId){
+  // Criar modal de seleção de quadro
+  const doc = await db.collection('lixeira').doc(docId).get();
+  const a = doc.data();
+
+  // Opções de quadros disponíveis
+  const opcoesQuadros = quadros.map(q=>`<option value="${q.id}"${q.id===a.tipo?' selected':''}>${q.nome}</option>`).join('');
+
+  // Usar o modal de confirmação mas personalizado
+  document.getElementById('confirmMsg').innerHTML = `
+    <div style="margin-bottom:12px;">Restaurar <b>${a.nome}</b> para qual quadro?</div>
+    <select id="destRestaurar" style="width:100%;padding:9px 11px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;">
+      ${opcoesQuadros}
+    </select>`;
+  document.getElementById('confirmOkBtn').textContent = '↩ Restaurar';
+  document.getElementById('confirmOkBtn').style.background = 'var(--green)';
+  document.getElementById('confirmOkBtn').style.color = '#1a1206';
+  document.getElementById('confirmOkBtn').style.border = 'none';
+  document.getElementById('confirmOkBtn').onclick = async ()=>{
+    const destino = document.getElementById('destRestaurar').value;
+    fecharConfirm();
+    delete a._tipo; delete a._deletadoEm;
+    a.tipo = destino;
+    await db.collection('alunos').doc(docId).set(a);
+    await db.collection('lixeira').doc(docId).delete();
+    alunos.push(a);
+    renderBoard();
+    renderAll();
+    carregarLixeira();
+  };
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+async function restaurarQuadro(docId){
+  confirmar('Restaurar este quadro?', async ()=>{
+    const doc = await db.collection('lixeira').doc(docId).get();
+    const q = doc.data();
+    delete q._tipo; delete q._deletadoEm; delete q._id;
+    quadros.push(q);
+    await saveQuadrosDB();
+    await db.collection('lixeira').doc(docId).delete();
+    renderBoard();
+    renderAll();
+    carregarLixeira();
+  });
+}
+
+async function deletarDefinitivo(docId){
+  confirmar('Excluir permanentemente? Esta ação não pode ser desfeita.', async ()=>{
+    await db.collection('lixeira').doc(docId).delete();
+    carregarLixeira();
+  });
+}
+
+// ─────────────── RELATÓRIO FINANCEIRO ───────────────
+function initRelatorioControls(){
+  const mesEl=document.getElementById('relMes');
+  const anoEl=document.getElementById('relAno');
+  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  meses.forEach((m,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=m;mesEl.appendChild(o);});
+  const hoje=new Date();
+  mesEl.value=hoje.getMonth()+1;
+  for(let y=hoje.getFullYear()-2;y<=hoje.getFullYear()+1;y++){const o=document.createElement('option');o.value=y;o.textContent=y;anoEl.appendChild(o);}
+  anoEl.value=hoje.getFullYear();
+}
+
+function renderRelatorio(){
+  const mes=parseInt(document.getElementById('relMes').value);
+  const ano=parseInt(document.getElementById('relAno').value);
+  const body=document.getElementById('relatorioBody');
+
+  // Coleta todos os pagamentos (pacote atual + histórico)
+  const pagamentos=[];
+  alunos.forEach(a=>{
+    const addPag=(p,nome,tipo)=>{
+      if(!p.dataPag) return;
+      const d=new Date(p.dataPag+'T12:00:00');
+      if(d.getMonth()+1===mes && d.getFullYear()===ano) pagamentos.push({nome,tipo,numPacote:p.numPacote,qtdAulas:p.qtdAulas,valor:p.valor||0,dataPag:p.dataPag});
+    };
+    addPag(a,a.nome,a.tipo);
+    (a.historico||[]).forEach(h=>addPag(h,a.nome,a.tipo));
+  });
+
+  if(!pagamentos.length){
+    body.innerHTML=`<div class="no-data">Nenhum pagamento registrado em ${mes}/${ano}.</div>`;
+    return;
+  }
+
+  const total=pagamentos.reduce((s,p)=>s+p.valor,0);
+  const porTipo={personal:0,tercas:0,sabados:0};
+  pagamentos.forEach(p=>porTipo[p.tipo]=(porTipo[p.tipo]||0)+p.valor);
+  const maxBar=Math.max(...Object.values(porTipo),1);
+  const tipoLabel={personal:'Personal',tercas:'Terças & Quintas',sabados:'Sábados'};
+  const tipoClass={personal:'tipo-personal',tercas:'tipo-tercas',sabados:'tipo-sabados'};
+
+  body.innerHTML=`
+    <div class="cards-grid">
+      <div class="kpi-card"><div class="kpi-value">R$ ${total.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="kpi-label">Receita total</div><div class="kpi-sub">${pagamentos.length} pagamento(s)</div></div>
+      <div class="kpi-card"><div class="kpi-value">R$ ${porTipo.personal.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="kpi-label">Personal</div><div class="kpi-sub">${pagamentos.filter(p=>p.tipo==='personal').length} pag.</div></div>
+      <div class="kpi-card"><div class="kpi-value">R$ ${porTipo.tercas.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="kpi-label">Terças & Quintas</div><div class="kpi-sub">${pagamentos.filter(p=>p.tipo==='tercas').length} pag.</div></div>
+      <div class="kpi-card"><div class="kpi-value">R$ ${porTipo.sabados.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="kpi-label">Sábados</div><div class="kpi-sub">${pagamentos.filter(p=>p.tipo==='sabados').length} pag.</div></div>
+    </div>
+
+    <div class="rel-section-title">Distribuição por tipo</div>
+    <div class="bar-chart">
+      ${Object.entries(porTipo).map(([tipo,val])=>`
+        <div class="bar-row">
+          <div class="bar-name">${tipoLabel[tipo]}</div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(val/maxBar*100)}%">${val>0?'R$ '+val.toLocaleString('pt-BR'):''}</div></div>
+        </div>`).join('')}
+    </div>
+
+    <div class="rel-section-title">Detalhamento</div>
+    <table class="rel-table">
+      <thead><tr><th>Aluno</th><th>Tipo</th><th>Pacote</th><th>Aulas</th><th>Data</th><th style="text-align:right">Valor</th></tr></thead>
+      <tbody>
+        ${pagamentos.sort((a,b)=>new Date(a.dataPag)-new Date(b.dataPag)).map(p=>`
+          <tr>
+            <td>${p.nome}</td>
+            <td><span class="tipo-badge ${tipoClass[p.tipo]}">${tipoLabel[p.tipo]}</span></td>
+            <td style="color:var(--text-muted);">nº ${p.numPacote}</td>
+            <td style="color:var(--text-muted);">${p.qtdAulas}</td>
+            <td style="color:var(--text-muted);">${fmtDate(p.dataPag)}</td>
+            <td style="text-align:right;font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold);">R$ ${p.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+          </tr>`).join('')}
+        <tr style="font-weight:600;">
+          <td colspan="5" style="color:var(--text-muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase;">Total do mês</td>
+          <td style="text-align:right;font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold);">R$ ${total.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+        </tr>
+      </tbody>
+    </table>`;
+}
+
+// ─────────────── UTILS ───────────────
+function fmtDate(d){
+  if(!d) return '';
+  const [y,m,day]=d.split('-');
+  const months=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  return `${parseInt(day)} de ${months[parseInt(m)-1]}. ${y}`;
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(alunos,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='alunos-yogacomnorber.json';a.click();
+}
+
+// close on overlay click
+['newModal','detailModal','renovarModal','confirmModal','editHistModal'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id) document.getElementById(id).classList.remove('open');});
+});
 </script>
 </body>
 </html>
